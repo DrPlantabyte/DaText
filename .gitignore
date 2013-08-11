@@ -1,6 +1,6 @@
 *.class
 
 # Package Files #
-*.jar
+#*.jar # I want to have a working distributable available fo anyone who has trouble compiling
 *.war
 *.ear
