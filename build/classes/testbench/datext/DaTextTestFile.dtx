@@ -1,0 +1,93 @@
+/*
+This is a multi-line
+comment. extra /* should not cause 
+problems */
+
+// single-line comment
+
+# This is an annotation, a special 
+# kind of comment that is parsed 
+# by DaText and stored with the 
+// interrupting an annotation with a comment shouldn't short-change the annotation
+# key that is defined right after 
+
+// extra new-lines should be okay
+
+# the annotation. Comments may not 
+# be preserved when a DaText file is
+# read, changed, and rewritten, but 
+# annotations will be preserved.
+# Any character is alloed in an 
+# annotation, even /* and //, which 
+# ordinarily signify a comment
+annotationKey // a key without a value is allowed, but means very little (can be used as a place-holder or flag)
+
+# This is a standard key=value pair for text
+text1=This is some text.
+# The content of this string is escaped, it should appear as 
+# Doug said "Lisa's teacher told me not to use / or \ in filenames."
+text2 = Doug said \"Lisa\'s teacher told me not to use \/ or \\ in filenames.\"
+# This should be identical to text2
+text3 = "Doug said \"Lisa's teacher told me not to use / or \\ in filenames.\""
+# This also should be identical to text2
+text3 = 'Doug said "Lisa\'s teacher told me not to use / or \\ in filenames."'
+/* This next key has not annotation (that's okay). Note that whitespace outside a
+ * key or value is ignored, but whitespace inside is preserved (see String.trim() 
+ * in the java API */
+   key with spaces in name =     herp a derp
+
+// You can (try to) parse any key as any value type. The following are demonstrations 
+// of how that should work (not that decimal parsings could be locale sensitive)
+# storing the Locale is a good way to keep number parsing consistent
+locale=en-US
+# a base-10 integer
+type is int10 = 12500
+# a base-10 integer
+type is int10 2 = 12,500 // note that use of , is locale specific
+# a base-10 integer
+type is int10 3 = 12 500
+# a base-16 integer
+type is hex = 0xEF1490
+# a decimal
+type is float = 12.345 // locale sensitive
+# a decimal in sci notation
+type is scifloat = 1.2345E+1 // locale sensitive
+# a byte array (internal whitespace is ignored, but helps with human readability)
+type is byte array = 01 23 45 67 89 AB CD EF 30 // note: this is hex format, NOT BASE64!
+# not a number (text)
+type is text = This is text that contains more then one line. \
+See?
+# not a number (text)
+type is text 2 = "It is probably better to use quotes for multiline text.
+See?
+So much better!"
+
+# element type is a DaText tree
+element1={
+	# a element inside an element
+	element2={
+		text1=heyyyy
+		text2=derp
+		number=5
+	}
+	# lists are comma separated text values. intentional commas can be escaped or quoted
+	list of names=[Bob, Bobby, Bobilina, 
+		Bodacious, "Bob, slayer of bunnies", 
+		Herp\, the derper,] // trailing comma should not cause errors, empty values not added to list
+}
+ 
+/*
+That's all the DaText types (int, hex int, decimal, byte array, text, elements, and lists.
+No more will be added to the spec for two reasons:
+	1. Adding any more will make DaText more complicated and difficult to read 
+and implement (defeating the purpose of DaText)
+	2. All further extensions can be made by either storing other types as text 
+or as binary data
+Note that there is no schema or other validation for DaText (if you need that, 
+switch to XML as your requirements fall outside the intention of DaText). The 
+type o data is determined only by which method is used to parse the DaText 
+ket=value pair, so putting text in a key that "should be a number" is a valid 
+DaText file, but will throw a NumberFormatException when the program tries to 
+use that key as a number (the exception's message should point to where in the 
+file the problem key is defined).
+*/

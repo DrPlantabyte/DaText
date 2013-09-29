@@ -4,6 +4,8 @@
  */
 package testbench.datext;
 
+import java.util.Locale;
+
 /**
  *
  * @author cybergnome
@@ -15,5 +17,6 @@ public class TestMain {
 	 */
 	public static void main(String[] args) {
 		// TODO code test logic here
+		System.out.println("Current locale is " + Locale.getDefault().toLanguageTag());
 	}
 }
