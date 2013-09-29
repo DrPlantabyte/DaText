@@ -4,6 +4,8 @@
  */
 package datext;
 
+import datext.io.StreamHandler;
+
 /**
  * Uses a FSM to parse a character stream to a DaText tree.
  * @author  Christopher Collin Hall
