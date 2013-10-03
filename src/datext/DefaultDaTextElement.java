@@ -15,12 +15,12 @@ import java.util.List;
  * 
  * @author Christopher Collin Hall
  */
-public class DefaultDaTextElement extends DaTextElement {
+public class DefaultDaTextElement extends DaTextVariable {
 
 	private final HashMap<String,DaTextEntry> map = new HashMap<>();
 	
 	@Override
-	public DaTextElement getElement(String key) throws UnsupportedOperationException {
+	public DaTextVariable getElement(String key) throws UnsupportedOperationException {
 		readLock.lock();
 		try{
 			
@@ -60,7 +60,7 @@ public class DefaultDaTextElement extends DaTextElement {
 	}
 
 	@Override
-	public DaTextElement getOrSetElement(String key) throws UnsupportedOperationException {
+	public DaTextVariable getOrSetElement(String key) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -100,7 +100,7 @@ public class DefaultDaTextElement extends DaTextElement {
 	}
 
 	@Override
-	public void putCopyOf(String key, DaTextElement other) {
+	public void putCopyOf(String key, DaTextVariable other) {
 		writeLock.lock();
 		try{
 			//
@@ -141,12 +141,12 @@ public class DefaultDaTextElement extends DaTextElement {
 	}
 
 	@Override
-	public List<DaTextElement> getChildElements() {
+	public List<DaTextVariable> getChildElements() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
 	@Override
-	public DaTextElement clone() {
+	public DaTextVariable clone() {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 	

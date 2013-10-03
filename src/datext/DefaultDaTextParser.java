@@ -46,7 +46,7 @@ public class DefaultDaTextParser extends DaTextParser{
 		input = new StreamHandler(streamReader);
 	}
 	
-	public static DaTextElement parse(java.io.InputStreamReader streamReader){
+	public static DaTextVariable parse(java.io.InputStreamReader streamReader){
 		
 	}
 }
