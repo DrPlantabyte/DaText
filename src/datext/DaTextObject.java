@@ -811,14 +811,6 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
 	 */
-	public abstract void put(String key, Number[] value);
-	/**
-	 * Stores a value in this object, overwriting any previous object 
-	 * or value that may have previously been stored under the same 
-	 * field name.
-	 * @param key Name of the field for use in the corresponding get method.
-	 * @param value Value to store
-	 */
 	public abstract void put(String key, String value);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
@@ -827,7 +819,23 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
 	 */
-	public abstract void put(String key, Number value);
+	public abstract void put(String key, int value);
+	/**
+	 * Stores a value in this object, overwriting any previous object 
+	 * or value that may have previously been stored under the same 
+	 * field name.
+	 * @param key Name of the field for use in the corresponding get method.
+	 * @param value Value to store
+	 */
+	public abstract void put(String key, long value);
+	/**
+	 * Stores a value in this object, overwriting any previous object 
+	 * or value that may have previously been stored under the same 
+	 * field name.
+	 * @param key Name of the field for use in the corresponding get method.
+	 * @param value Value to store
+	 */
+	public abstract void put(String key, double value);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
