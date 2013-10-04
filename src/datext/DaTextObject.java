@@ -17,49 +17,21 @@ public abstract class DaTextObject extends DaTextVariable{
 	/** Points to the DaText above this one. If this is the root object, 
 	 * then this will be null. */
 	private DaTextObject parent = null;
-	/** Locale for parsing data, default to English (programming standard) */
-	private java.util.Locale locale = java.util.Locale.ENGLISH;
-	/**
-	 * Gets the locale being used by this object for parsing numbers.
-	 * <p/>This method is thread-safe.
-	 * @return This object's locale
-	 */
-	public java.util.Locale getLocale(){
-		readLock.lock();
-		try{
-			return locale;
-		}finally {
-			readLock.unlock();
-		}
-	}
-	/**
-	 * Sets the locale used by this object (but not necessarily child 
-	 * objects) for parsing numbers.
-	 * <p/>This method is thread-safe.
-	 * @param newLocale The new locale to use.
-	 */
-	public void setLocale(java.util.Locale newLocale){
-		writeLock.lock();
-		try{
-			locale = newLocale;
-		}finally {
-			writeLock.unlock();
-		}
-	}
+	
 	/**
 	 * Sets the locale used by this object and all child 
 	 * objects for parsing numbers.
 	 * <p/>This method is thread-safe.
 	 * @param newLocale The new locale to use.
 	 */
-	public void setLocaleForAllChildren(java.util.Locale newLocale){
+	@Override public void setLocale(java.util.Locale newLocale){
 		// TODO: this method
 		writeLock.lock();
 		try{
-			locale = newLocale;
-//			for(DaTextObject child : getChildElements()){
-//				child.setLocaleForAllChildren(newLocale);
-//			}
+			this.setLocale(newLocale);
+			for(DaTextVariable child : this.getAllVariables()){
+				child.setLocale(newLocale);
+			}
 		}finally {
 			writeLock.unlock();
 		}

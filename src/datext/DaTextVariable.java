@@ -25,6 +25,35 @@ public abstract class DaTextVariable implements Cloneable{
 	/** All setter methods must use this lock (or their own Read/Write Lock) to be thread-safe */
 	protected final WriteLock writeLock = readWriteLock.writeLock();
 	
+	/** Locale for parsing data, default to English (programming standard) */
+	private java.util.Locale locale = java.util.Locale.ENGLISH;
+	/**
+	 * Gets the locale being used by this object for parsing numbers.
+	 * <p/>This method is thread-safe.
+	 * @return This object's locale
+	 */
+	public java.util.Locale getLocale(){
+		readLock.lock();
+		try{
+			return locale;
+		}finally {
+			readLock.unlock();
+		}
+	}
+	/**
+	 * Sets the locale used by this object (but not necessarily child 
+	 * objects) for parsing numbers.
+	 * <p/>This method is thread-safe.
+	 * @param newLocale The new locale to use.
+	 */
+	public void setLocale(java.util.Locale newLocale){
+		writeLock.lock();
+		try{
+			locale = newLocale;
+		}finally {
+			writeLock.unlock();
+		}
+	}
 
 	/** Annotation content */
 	private String annotation = null;
