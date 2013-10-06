@@ -13,8 +13,15 @@ import datext.util.*;
  * @author Christopher Collin Hall
  */
 public class DefaultVariable extends DaTextVariable{
-
+	
 	private String value = "";
+	/**
+	 * 
+	 * @param contents The value of this variable as text.
+	 */
+	public DefaultVariable(String contents){
+		value = contents;
+	}
 	
 	@Override
 	public String asText() throws UnsupportedOperationException {
