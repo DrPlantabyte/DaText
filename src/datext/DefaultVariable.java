@@ -5,6 +5,7 @@
 package datext;
 
 import java.util.List;
+import datext.util.*;
 
 /**
  * The default variable implementation just stores the string value of 
@@ -59,8 +60,7 @@ public class DefaultVariable extends DaTextVariable{
 	public byte[] asBinary() throws UnsupportedOperationException, NumberFormatException {
 		readLock.lock();
 		try{
-			// TODO: binary parsing
-			throw new UnsupportedOperationException("Not supported yet.");
+			return BinaryConverter.stringToBytes(value);
 		} finally {
 			readLock.unlock();
 		}
