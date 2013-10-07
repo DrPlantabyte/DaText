@@ -4,9 +4,9 @@
  */
 package testbench.datext;
 
-import datext.util.BinaryConverter;
-import java.util.Arrays;
-import java.util.Locale;
+import datext.*;
+import datext.util.*;
+import java.util.*;
 
 /**
  *
@@ -26,6 +26,7 @@ public class TestMain {
 		
 		byte[] tester = {1,64,33,-23,-126,127,0,24,54,-34,-42,-1};
 		testBinaryConversion(tester);
+		testListReader("[herp, derp,,  burp,\n{\n\tsir=spamalot\n\trank=knight\n\tsays=ni!\n},\n]");
 	}
 	
 	public static void testBinaryConversion(byte[] tester){
@@ -43,5 +44,35 @@ public class TestMain {
 			}
 		}
 		System.out.println("Binary conversion test result: "+ pass);
+	}
+
+	private static void testListReader(String listWithBrackets) {
+		int start = listWithBrackets.indexOf("[");
+		int end = listWithBrackets.indexOf("]",start+1);
+		System.out.println("Parsing list:\n"+listWithBrackets);
+		List<DaTextVariable> l = ListHandler.parseListString(listWithBrackets.substring(start, end));
+		
+		boolean first = true;
+		StringBuilder postProcessed = new StringBuilder();
+		postProcessed.append("[");
+		for(DaTextVariable v : l){
+			if(!first){
+				postProcessed.append(", ");
+				first = false;
+			}
+			postProcessed.append(v.asText());
+		}
+		postProcessed.append("]\n");
+		System.out.println("parsed result:\n"+postProcessed.toString());
+		String s = postProcessed.toString();
+		int start2 = s.indexOf("[");
+		int end2 = s.indexOf("]",start2+1);
+		List<DaTextVariable> l2 = ListHandler.parseListString(s.substring(start2, end2));
+		
+		boolean theSame =(l.size() == l2.size());
+		for(int i = 0; i < l.size() && i < l2.size(); i++){
+			theSame = theSame && l.get(i).asText().equals(l2.get(i).asText());
+		}
+		System.out.println("Test result:"+theSame);
 	}
 }

@@ -4,8 +4,8 @@
  */
 package datext.util;
 
-import datext.DaTextVariable;
-import java.util.List;
+import datext.*;
+import java.util.*;
 
 /**
  *
@@ -19,17 +19,25 @@ public class ListHandler {
      * @return 
      */
     public static List<DaTextVariable> parseListString(String listContent){
+		List<DaTextVariable> list = new ArrayList<>();
 		int start = 0;
-		int end = 0;
-		while( end < listContent.length()){
-			if(listContent.charAt(end) == ','){
-				if((end > 0 && listContent.charAt(end-1) == '\\') == false){
-					break;
+		int end;
+		while(start < listContent.length()){
+			end = start;
+			while(end < listContent.length()){
+				if(listContent.charAt(end) == ','){
+					if((end > 0 && listContent.charAt(end-1) == '\\') == false){
+						break;
+					}
 				}
+				end++;
 			}
-			end++;
+			String listItem = listContent.substring(start, end).trim();
+			if(listItem.length() > 0){// skip empty list entries
+				list.add(new DefaultVariable(listItem));
+			}
+			start = end + 1;
 		}
-		String listItem = listContent.substring(start, end);
-		
+		return list;
 	}
 }
