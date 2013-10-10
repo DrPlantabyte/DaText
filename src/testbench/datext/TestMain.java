@@ -24,9 +24,11 @@ public class TestMain {
 		
 		System.out.println(Arrays.toString(BinaryConverter.stringToBytes("A0 00 0F 3E DE AD BE EF FE ED")));
 		
+		testEscaping("Pown'd the \n\tmaster][ and his {\\deleted\\} dog too.");
+		
 		byte[] tester = {1,64,33,-23,-126,127,0,24,54,-34,-42,-1};
 		testBinaryConversion(tester);
-		testListReader("[herp,derp,ferp,,  burp,\n{\n\tsir=spamalot\n\trank=knight\n\tsays=ni!\n\tnestedList=[1, 2, [7,8,9,], 4, 5]\n},\n[A, B, C],\n]");
+		testListReader("[herp,derp\\,ferp,,  burp,\n{\n\tsir=spamalot\n\trank=knight\n\tsays=ni!\n\tnestedList=[1, 2, [7,8,9,], 4, 5]\n},\n[A, B, C],\n]");
 	}
 	
 	public static void testBinaryConversion(byte[] tester){
@@ -78,5 +80,13 @@ public class TestMain {
 		}
 		theSame = theSame && (ListHandler.listToString(l).equals(ListHandler.listToString(l2)));
 		System.out.println("Test result:"+theSame);
+	}
+	
+	static void testEscaping(String str){
+		System.out.println("escaping string:\n"+str);
+		System.out.println("\tas\n"+Formatter.StdEscape(str));
+		System.out.println("escape test result: " + (
+				Formatter.StdUnescape(Formatter.StdEscape(str)).equals(str)));
+		
 	}
 }

@@ -23,14 +23,29 @@ public class ListHandler {
 		List<DaTextVariable> list = new ArrayList<>();
 		int start = 0;
 		int end;
+		int braceDepth = 0; // used for keeping track of nested objects
+		int bracketDepth = 0; // used for keeping track of nested lists
 		while(start < listContent.length()){
 			end = start;
 			while(end < listContent.length()){
+				if(end > 0 && listContent.charAt(end-1) == '\\'){
+					end++;
+					continue;
+				}
 				// TODO: skip nested objects and lists
+				// skip nested objects/lists
+				if(listContent.charAt(end) == '{' ){
+					braceDepth++;
+				} else if(listContent.charAt(end) == '[' ){
+					bracketDepth++;
+				} else if(listContent.charAt(end) == '}' && braceDepth > 0 && (end == 0 || listContent.charAt(end-1) != '\\')){
+					braceDepth--;
+				} else if(listContent.charAt(end) == ']' && bracketDepth > 0 && (end == 0 || listContent.charAt(end-1) != '\\')){
+					bracketDepth--;
+				}
 				// skip escaped commas
 				if(listContent.charAt(end) == ','){
 					if((end > 0 && listContent.charAt(end-1) == '\\') == false){
-						end++;
 						break;
 					}
 				}
