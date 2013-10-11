@@ -13,12 +13,14 @@ import java.util.*;
  */
 public class ListHandler {
     
+	
+	static final String[] LIST_CONTROL_CHARS = Formatter.concatonateStringArrays(Formatter.CONTROL_CHARS, ",");
     /**
      * 
      * @param listContent The text content of a list (including [ and ])
      * @return 
      */
-    public static List<DaTextVariable> parseListString(String listString){
+    public static List<DaTextVariable> parseListString(String listString) throws IllegalArgumentException{
 		String listContent = listString.substring(listString.indexOf("[")+1,listString.lastIndexOf("]"));
 		List<DaTextVariable> list = new ArrayList<>();
 		int start = 0;
@@ -43,6 +45,14 @@ public class ListHandler {
 				} else if(listContent.charAt(end) == ']' && bracketDepth > 0 && (end == 0 || listContent.charAt(end-1) != '\\')){
 					bracketDepth--;
 				}
+				if(braceDepth > 0 || bracketDepth > 0){
+					end++;
+					if(end >= listContent.length()){
+						// format error!
+						throw new IllegalArgumentException("Syntax error while parsing list ["+listContent+"]");
+					}
+					continue;
+				}
 				// skip escaped commas
 				if(listContent.charAt(end) == ','){
 					if((end > 0 && listContent.charAt(end-1) == '\\') == false){
@@ -51,12 +61,13 @@ public class ListHandler {
 				}
 				end++;
 			}
-			String listItem = listContent.substring(start, end).trim();
+			String listItem = Formatter.unescape(listContent.substring(start, end).trim(), LIST_CONTROL_CHARS);
 			if(listItem.length() > 0){// skip empty list entries
 				list.add(new DefaultVariable(listItem));
 			}
 			start = end + 1;
 		}
+		// TODO: either return unmodifiable list or make changes to list update the data structure
 		return list;
 	}
 	

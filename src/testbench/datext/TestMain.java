@@ -67,7 +67,7 @@ public class TestMain {
 		String output = ListHandler.listToString(l);//postProcessed.toString();
 		System.out.println("parsed result:\n");//+output);
 		for(int i = 0; i < l.size(); i++){
-			System.out.println("["+i+"]\t"+l.get(i).asText());
+			System.out.println("<"+i+">\t"+l.get(i).asText());
 		}
 		List<DaTextVariable> l2 = ListHandler.parseListString(output);
 		

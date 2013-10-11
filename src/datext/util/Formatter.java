@@ -37,4 +37,19 @@ public class Formatter {
 		output = output.replace("\\\\", "\\");
 		return output;
 	}
+	
+	
+	public static String[] concatonateStringArrays(String[] A, String... B){
+		String[] C = new String[A.length + B.length];
+		int i = 0;
+		for(int n = 0; n < A.length; n++){
+			C[i] = A[n];
+			i++;
+		}
+		for(int n = 0; n < B.length; n++){
+			C[i] = B[n];
+			i++;
+		}
+		return C;
+	}
 }
