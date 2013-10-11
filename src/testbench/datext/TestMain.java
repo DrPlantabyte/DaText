@@ -65,7 +65,10 @@ public class TestMain {
 		postProcessed.append("]\n");
 		System.out.println("parsed result:\n"+postProcessed.toString());*/
 		String output = ListHandler.listToString(l);//postProcessed.toString();
-		System.out.println("parsed result:\n"+output);
+		System.out.println("parsed result:\n");//+output);
+		for(int i = 0; i < l.size(); i++){
+			System.out.println("["+i+"]\t"+l.get(i).asText());
+		}
 		List<DaTextVariable> l2 = ListHandler.parseListString(output);
 		
 		boolean theSame =(l.size() == l2.size());
@@ -84,9 +87,9 @@ public class TestMain {
 	
 	static void testEscaping(String str){
 		System.out.println("escaping string:\n"+str);
-		System.out.println("\tas\n"+Formatter.StdEscape(str));
+		System.out.println("\tas\n"+datext.util.Formatter.escape(str));
 		System.out.println("escape test result: " + (
-				Formatter.StdUnescape(Formatter.StdEscape(str)).equals(str)));
+				datext.util.Formatter.unescape(datext.util.Formatter.escape(str)).equals(str)));
 		
 	}
 }

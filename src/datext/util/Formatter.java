@@ -10,12 +10,14 @@ package datext.util;
  */
 public class Formatter {
 	
-	public static String StdUnescape(String input){
-		return unescape(input,"{","}","[","]","\n");
+	final static String[] CONTROL_CHARS = {"{","}","[","]","\n"};
+	
+	public static String unescape(String input){
+		return unescape(input,CONTROL_CHARS);
 	}
 	
-	public static String StdEscape(String input){
-		return escape(input,"{","}","[","]","\n");
+	public static String escape(String input){
+		return escape(input,CONTROL_CHARS);
 	}
 	
 	public static String escape(String input, String... escapers){
