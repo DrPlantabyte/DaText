@@ -1,9 +1,7 @@
 package datext;
 // TODO: description/documentation
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 
 /**
@@ -12,5 +10,16 @@ import java.nio.charset.Charset;
  */
 public abstract class DaTextParser {
 
-	public abstract DaTextObject parse(InputStream in, Charset cs);
+	
+	
+	public abstract DaTextObject parse(Reader in);
+	
+	public DaTextObject parse(String input){
+		StringReader sin = new StringReader(input);
+		return parse(sin);
+	}
+	
+	public DaTextObject parse(InputStream in, Charset cs){
+		return parse(new InputStreamReader(in,cs));
+	}
 }
