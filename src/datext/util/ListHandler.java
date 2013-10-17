@@ -34,7 +34,6 @@ public class ListHandler {
 					end++;
 					continue;
 				}
-				// TODO: skip nested objects and lists
 				// skip nested objects/lists
 				if(listContent.charAt(end) == '{' ){
 					braceDepth++;
@@ -79,7 +78,7 @@ public class ListHandler {
 			if(!first){
 				postProcessed.append(", ");
 			}
-			postProcessed.append(v.asText());
+			postProcessed.append(Formatter.escape(v.asText(), LIST_CONTROL_CHARS));
 			first = false;
 		}
 		postProcessed.append("]\n");
