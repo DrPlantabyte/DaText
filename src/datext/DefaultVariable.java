@@ -42,6 +42,12 @@ public class DefaultVariable extends DaTextVariable{
 			readLock.unlock();
 		}
 	}
+	
+	@Override
+	public DaTextObject asObject(){
+		// TODO: parse text as object
+		throw new UnsupportedOperationException("Not implemented yet.");
+	}
 
 	@Override
 	public long asLong() throws UnsupportedOperationException, NumberFormatException {
