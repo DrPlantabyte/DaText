@@ -5,7 +5,7 @@
 package datext.io;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
 /**
  * This class is used for thread safety. It keeps together variables that are
@@ -15,7 +15,7 @@ import java.io.InputStreamReader;
  */
 public class StreamHandler {
 
-	final InputStreamReader in;
+	final Reader in;
 	/**
 	 * set to true after first read
 	 */
@@ -28,16 +28,19 @@ public class StreamHandler {
 	 * Currently read character
 	 */
 	int current = -1;
-	/**
-	 * used to store annotations
-	 */
-	StringBuilder annotationBuffer = new StringBuilder();
 
 	/**
 	 * this is the only constructor
 	 */
-	public StreamHandler(InputStreamReader instream) {
+	public StreamHandler(Reader instream) {
 		in = instream;
+	}
+	/**
+	 * Closes the underlying stream reader.
+	 * @throws IOException Thrown if there was a problem closing the stream.
+	 */
+	public void close() throws IOException{
+		in.close();
 	}
 
 	/**

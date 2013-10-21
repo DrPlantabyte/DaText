@@ -12,8 +12,11 @@ public abstract class DaTextParser {
 
 	
 	/**
+	 * <p/>
 	 * To preserve thread-safety, implementations must not use non-final 
-	 * member variables.
+	 * member variables. Typically this means using a nested class that is 
+	 * instantiated to handle the actual parsing in each invocation of this 
+	 * method.
 	 * @param in
 	 * @return
 	 * @throws IOException 

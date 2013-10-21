@@ -5,12 +5,27 @@
 package datext;
 
 import datext.io.StreamHandler;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Uses a FSM to parse a character stream to a DaText tree.
  * @author  Christopher Collin Hall
  */
 public class DefaultDaTextParser extends DaTextParser{
+
+	
+	
+	@Override
+	public DaTextObject parse(Reader in) throws IOException {
+		Parser p = new Parser(in);
+		p.parse();
+		return p.toDaTextObject();
+	}
+	
+	
+	
+	
 	/** These are the states of the FSM for parsing the file */
 	protected enum ReadState {
 		/** between &#47;* and *&#47; */
@@ -32,21 +47,30 @@ public class DefaultDaTextParser extends DaTextParser{
 		/** reading a list */
 		SQUARE_BRACKET
 	}
-	/** FSM state */
-	ReadState state = ReadState.WHITESPACE; // starting FSM state
 	
-	StreamHandler input;
-	/**
-	 * In the interest of being thread-safe, all constructors are 
-	 * private. Parsing is done through static methods that create a 
-	 * unique instance of all variables for each invokation.
-	 * @param streamReader The input character stream to parse.
-	 */
-	private DefaultDaTextParser(java.io.InputStreamReader streamReader){
-		input = new StreamHandler(streamReader);
+	
+	protected class Parser {
+
+		/**
+		 * FSM state
+		 */
+		ReadState state = ReadState.WHITESPACE; // starting FSM state
+		/** input stream */
+		final StreamHandler input;
+		
+		Parser(Reader r) {
+			input = new StreamHandler(r);
+		}
+
+		void parse() {
+			throw new UnsupportedOperationException("Not yet implemented");
+		}
+		
+
+		DaTextObject toDaTextObject() {
+			throw new UnsupportedOperationException("Not yet implemented");
+		}
+		
 	}
 	
-//	public static DaTextVariable parse(java.io.InputStreamReader streamReader){
-//		
-//	}
 }
