@@ -48,7 +48,10 @@ public class DefaultDaTextParser extends DaTextParser{
 		SQUARE_BRACKET
 	}
 	
-	
+	/**
+	 * This class does the heavy-lifting for the parsing. The FSM actually 
+	 * resides inside this class to avoid thread problems.
+	 */
 	protected class Parser {
 
 		/**
@@ -62,7 +65,23 @@ public class DefaultDaTextParser extends DaTextParser{
 			input = new StreamHandler(r);
 		}
 
-		void parse() {
+		void parse() throws IOException {
+			while(input.peekCurrent() != null){
+				Character c = input.readNextCharWtihEscape();
+				if(c == null) break; // we're done (EOF)
+				switch(state){
+					// Finite state machine (FSM)
+					case WHITESPACE:
+						// skip whitespace;
+						if(!Character.isWhitespace(c)){
+							if(c == '')
+						}
+						break;
+					default:
+						// Injection of additional enums?!
+						throw new UnsupportedOperationException("WTF!!! Where did '" + state.name() + "' come from!");
+				}
+			}
 			throw new UnsupportedOperationException("Not yet implemented");
 		}
 		
@@ -70,6 +89,8 @@ public class DefaultDaTextParser extends DaTextParser{
 		DaTextObject toDaTextObject() {
 			throw new UnsupportedOperationException("Not yet implemented");
 		}
+
+		
 		
 	}
 	

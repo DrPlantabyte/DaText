@@ -51,7 +51,7 @@ public class StreamHandler {
 	 * @throws IOException Thrown if there is an error reading the input stream
 	 * reader.
 	 */
-	Character readNextChar() throws IOException {
+	public Character readNextChar() throws IOException {
 		if (streamStarted == false) {
 			streamStarted = true;
 			current = in.read();
@@ -76,7 +76,7 @@ public class StreamHandler {
 	 * @return Returns the current character in the stream, or null if the
 	 * stream has reached its end.
 	 */
-	Character peekCurrent() {
+	public Character peekCurrent() {
 		if (current < 0) {
 			return null;
 		}
@@ -89,7 +89,7 @@ public class StreamHandler {
 	 * @return Returns the next character in the stream, or null if the stream
 	 * has reached its end.
 	 */
-	Character peekNext() {
+	public Character peekNext() {
 		if (future < 0) {
 			return null;
 		}
@@ -99,7 +99,7 @@ public class StreamHandler {
 	/**
 	 * reads the stream until a non-whitespace character appears
 	 */
-	void skipWhiteSpace() throws IOException {
+	public void skipWhiteSpace() throws IOException {
 		while (current >= 0 && Character.isWhitespace(current) == true) {
 			readNextChar();
 		}
@@ -174,5 +174,13 @@ public class StreamHandler {
 			c = readNextChar();
 		}
 		return sb.toString();
+	}
+
+	public Character readNextCharWtihEscape() throws IOException {
+		Character c = readNextChar();
+		if(c == '\\'){
+			return readNextChar();
+		}
+		return c;
 	}
 }
