@@ -64,18 +64,56 @@ public class DefaultDaTextParser extends DaTextParser{
 		Parser(Reader r) {
 			input = new StreamHandler(r);
 		}
+		private Parser(StreamHandler r) {
+			input = (r);
+		}
+		
+		
 
-		void parse() throws IOException {
+		StringBuilder annotBuffer = new StringBuilder();
+		StringBuilder keynameBuffer = new StringBuilder();
+		
+		void parse() throws IOException, IllegalArgumentException {
+			parse(1);
+		}
+		
+		void parse(int line) throws IOException, IllegalArgumentException {
+			DefaultObject obj = new DefaultObject();
 			while(input.peekCurrent() != null){
-				Character c = input.readNextCharWtihEscape();
+				Character c = input.readNextChar();
+				if(c == '\n'){line++;}
 				if(c == null) break; // we're done (EOF)
 				switch(state){
 					// Finite state machine (FSM)
 					case WHITESPACE:
 						// skip whitespace;
 						if(!Character.isWhitespace(c)){
-							if(c == '')
+							if(c == '#'){
+								state = ReadState.ANNOTATION;
+							} else if(c == '{'){
+								// nested object
+								if(keynameBuffer.length() == 0){
+									throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: object variable without a variable name");
+								}
+								Parser p = new DefaultDaTextParser.Parser(input);
+								p.parse(line);
+								obj.put(keynameBuffer.toString().trim(), p.toDaTextObject());
+								// will use up the stream until the next '}'
+							} else if(c == '/' && input.peekNext() == '/'){
+								state = ReadState.LINE_COMMENT;
+							} else {
+								state = ReadState.KEY;
+							}
 						}
+						break;
+					case ANNOTATION:
+						if(c == '\n'){
+							state = ReadState.WHITESPACE;
+						}
+						if(c == '\\'){
+							c = input.readNextChar();
+						}
+						annotBuffer.append(c);
 						break;
 					default:
 						// Injection of additional enums?!
