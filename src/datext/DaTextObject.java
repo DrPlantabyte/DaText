@@ -6,6 +6,7 @@ package datext;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -15,10 +16,13 @@ public abstract class DaTextObject extends DaTextVariable{
 	// TODO: change all put... methods to include annotation parameter and make 
 	// the annotatoin-free methods invoke the annotation methods with a null 
 	// annotation
+	
+	// TODO: update documentation
 
 	/** Points to the DaText above this one. If this is the root object, 
 	 * then this will be null. */
 	private DaTextObject parent = null;
+	
 	
 	/**
 	 * Sets the locale used by this object and all child 
@@ -30,7 +34,7 @@ public abstract class DaTextObject extends DaTextVariable{
 		// TODO: this method
 		writeLock.lock();
 		try{
-			this.setLocale(newLocale);
+			super.setLocale(newLocale);
 			for(DaTextVariable child : this.getAllVariables()){
 				child.setLocale(newLocale);
 			}
@@ -489,23 +493,306 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * @param key Variable name that identifies the variable being referenced.
 	 * @param defaultValue The value to initialize the field to if is doesn't 
 	 * already exist (ignored if it does already exist).
+	 * @param annotation Annotation that describes this variable. May be null.
+	 * @return Returns the referenced field, if it exists, or the newly created 
+	 * one (with the provided default value) it it didn't exist.
+	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
+	 * but is not the correct type.
+	 */
+	public List<DaTextVariable> getOrSet(String key, List<DaTextVariable> defaultValue, String annotation) throws UnsupportedOperationException{
+		writeLock.lock();
+		try {
+			if(exists(key)){
+			return get(key).asList();
+		} else {
+			put(key,defaultValue,annotation);
+			return get(key).asList();
+		}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	/**
+	 * Gets a field by the given field name, if it exists, 
+	 * or adds a new one if it doesn't already exist. 
+	 * <p/>
+	 * Example:<br/>
+	 * <i>ex.dtx:</i><br/>
+	 * <tt>
+	 * numJellyBeans=273<br/>
+	 * weight=158.052<br/>
+	 * availableColors=[red,blue,yellow,green]<br/>
+	 * # Properties of this batch of jelly beans <br/>
+	 * properties={<br/>
+	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
+	 * &nbsp;&nbsp;    texture=shiny<br/>
+	 * &nbsp;&nbsp;    flavor=fruity<br/>
+	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
+	 * }<br/>
+	 * </tt>
+	 * <br/>
+	 * <i>java code:</i><br/>
+	 * <code>
+	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
+	 * <b>String title = docRoot.getOrSet("label").getOrSet("title", "Magical Beans");</b><br/>
+	 * System.out.println("Title: " + title);<br/>
+	 * </code>
+	 * @param key Variable name that identifies the variable being referenced.
+	 * @param defaultValue The value to initialize the field to if is doesn't 
+	 * already exist (ignored if it does already exist).
+	 * @param annotation Annotation that describes this variable. May be null.
+	 * @return Returns the referenced field, if it exists, or the newly created 
+	 * one (with the provided default value) it it didn't exist.
+	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
+	 * but is not the correct type.
+	 */
+	public String getOrSet(String key, String defaultValue, String annotation) throws UnsupportedOperationException{
+		writeLock.lock();
+		try {
+			if(exists(key)){
+			return get(key).asText();
+		} else {
+			put(key,defaultValue,annotation);
+			return defaultValue;
+		}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	/**
+	 * Gets a field by the given field name, if it exists, 
+	 * or adds a new one if it doesn't already exist. 
+	 * <p/>
+	 * Example:<br/>
+	 * <i>ex.dtx:</i><br/>
+	 * <tt>
+	 * numJellyBeans=273<br/>
+	 * weight=158.052<br/>
+	 * availableColors=[red,blue,yellow,green]<br/>
+	 * # Properties of this batch of jelly beans <br/>
+	 * properties={<br/>
+	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
+	 * &nbsp;&nbsp;    texture=shiny<br/>
+	 * &nbsp;&nbsp;    flavor=fruity<br/>
+	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
+	 * }<br/>
+	 * </tt>
+	 * <br/>
+	 * <i>java code:</i><br/>
+	 * <code>
+	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
+	 * <b>int revision = docRoot.getOrSet("label").getOrSet("version", 1);</b><br/>
+	 * System.out.println("Revision " + revision);<br/>
+	 * </code>
+	 * @param key Variable name that identifies the variable being referenced.
+	 * @param defaultValue The value to initialize the field to if is doesn't 
+	 * already exist (ignored if it does already exist).
+	 * @param annotation Annotation that describes this variable. May be null.
+	 * @return Returns the referenced field, if it exists, or the newly created 
+	 * one (with the provided default value) it it didn't exist.
+	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
+	 * but is not the correct type.
+	 * @throws NumberFormatException Thrown if the indicated field exists 
+	 * but is not correctly formatted.
+	 */
+	public  int getOrSet(String key, int defaultValue, String annotation) throws UnsupportedOperationException, NumberFormatException{
+		writeLock.lock();
+		try {
+			if(exists(key)){
+			return get(key).asInt();
+		} else {
+			put(key,defaultValue,annotation);
+			return defaultValue;
+		}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	/**
+	 * Gets a field by the given field name, if it exists, 
+	 * or adds a new one if it doesn't already exist. 
+	 * <p/>
+	 * Example:<br/>
+	 * <i>ex.dtx:</i><br/>
+	 * <tt>
+	 * numJellyBeans=273<br/>
+	 * weight=158.052<br/>
+	 * availableColors=[red,blue,yellow,green]<br/>
+	 * # Properties of this batch of jelly beans <br/>
+	 * properties={<br/>
+	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
+	 * &nbsp;&nbsp;    texture=shiny<br/>
+	 * &nbsp;&nbsp;    flavor=fruity<br/>
+	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
+	 * }<br/>
+	 * </tt>
+	 * <br/>
+	 * <i>java code:</i><br/>
+	 * <code>
+	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
+	 * <b>long time = docRoot.getOrSet("label").getOrSet("timestamp", System.currentTimeMillis());</b><br/>
+	 * System.out.println("Last edited on " + (new Date(time)).toString());<br/>
+	 * </code>
+	 * @param key Variable name that identifies the variable being referenced.
+	 * @param defaultValue The value to initialize the field to if is doesn't 
+	 * already exist (ignored if it does already exist).
+	 * @param annotation Annotation that describes this variable. May be null.
+	 * @return Returns the referenced field, if it exists, or the newly created 
+	 * one (with the provided default value) it it didn't exist.
+	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
+	 * but is not the correct type.
+	 * @throws NumberFormatException Thrown if the indicated field exists 
+	 * but is not correctly formatted.
+	 */
+	public long getOrSet(String key, long defaultValue, String annotation) throws UnsupportedOperationException, NumberFormatException{
+		writeLock.lock();
+		try {
+			if(exists(key)){
+			return get(key).asLong();
+		} else {
+			put(key,defaultValue,annotation);
+			return defaultValue;
+		}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	/**
+	 * Gets a field by the given field name, if it exists, 
+	 * or adds a new one if it doesn't already exist. 
+	 * <p/>
+	 * Example:<br/>
+	 * <i>ex.dtx:</i><br/>
+	 * <tt>
+	 * numJellyBeans=273<br/>
+	 * weight=158.052<br/>
+	 * availableColors=[red,blue,yellow,green]<br/>
+	 * # Properties of this batch of jelly beans <br/>
+	 * properties={<br/>
+	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
+	 * &nbsp;&nbsp;    texture=shiny<br/>
+	 * &nbsp;&nbsp;    flavor=fruity<br/>
+	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
+	 * }<br/>
+	 * </tt>
+	 * <br/>
+	 * <i>java code:</i><br/>
+	 * <code>
+	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
+	 * <b>Double aspect = docRoot.getOrSet("label").getOrSet("aspect ratio", 1.5);</b><br/>
+	 * System.out.println("Aspect ratio =  " + aspect);<br/>
+	 * </code>
+	 * @param key Variable name that identifies the variable being referenced.
+	 * @param defaultValue The value to initialize the field to if is doesn't 
+	 * already exist (ignored if it does already exist).
+	 * @param annotation Annotation that describes this variable. May be null.
+	 * @return Returns the referenced field, if it exists, or the newly created 
+	 * one (with the provided default value) it it didn't exist.
+	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
+	 * but is not the correct type.
+	 * @throws NumberFormatException Thrown if the indicated field exists 
+	 * but is not correctly formatted.
+	 */
+	public double getOrSet(String key, double defaultValue, String annotation) throws UnsupportedOperationException, NumberFormatException{
+		writeLock.lock();
+		try {
+			if(exists(key)){
+			return get(key).asNumber();
+		} else {
+			put(key,defaultValue,annotation);
+			return defaultValue;
+		}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	/**
+	 * Gets a field by the given field name, if it exists, 
+	 * or adds a new one if it doesn't already exist. 
+	 * <p/>
+	 * Example:<br/>
+	 * <i>ex.dtx:</i><br/>
+	 * <tt>
+	 * numJellyBeans=273<br/>
+	 * weight=158.052<br/>
+	 * availableColors=[red,blue,yellow,green]<br/>
+	 * # Properties of this batch of jelly beans <br/>
+	 * properties={<br/>
+	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
+	 * &nbsp;&nbsp;    texture=shiny<br/>
+	 * &nbsp;&nbsp;    flavor=fruity<br/>
+	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
+	 * }<br/>
+	 * </tt>
+	 * <br/>
+	 * <i>java code:</i><br/>
+	 * <code>
+	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
+	 * ByteArrayOutputStream stream = new ByteArrayOutputStream();<br/>
+	 * ImageIO.write(newLabelImg, "png", stream);<br/>
+	 * <b>byte[] imageStream = docRoot.getOrSet("label").getOrSet("icon", stream.toByteArray());</b><br/>
+	 * </code>
+	 * @param key Variable name that identifies the variable being referenced.
+	 * @param defaultValue The value to initialize the field to if is doesn't 
+	 * already exist (ignored if it does already exist).
+	 * @param annotation Annotation that describes this variable. May be null.
+	 * @return Returns the referenced field, if it exists, or the newly created 
+	 * one (with the provided default value) it it didn't exist.
+	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
+	 * but is not the correct type.
+	 * @throws NumberFormatException Thrown if the indicated field exists 
+	 * but is not correctly formatted.
+	 */
+	public byte[] getOrSet(String key, byte[] defaultValue, String annotation) throws UnsupportedOperationException, NumberFormatException{
+		writeLock.lock();
+		try {
+			if(exists(key)){
+			return get(key).asBinary();
+		} else {
+			put(key,defaultValue,annotation);
+			return defaultValue;
+		}
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	/**
+	 * Gets a field by the given field name, if it exists, 
+	 * or adds a new one if it doesn't already exist. 
+	 * <p/>
+	 * Example:<br/>
+	 * <i>ex.dtx:</i><br/>
+	 * <tt>
+	 * numJellyBeans=273<br/>
+	 * weight=158.052<br/>
+	 * availableColors=[red,blue,yellow,green]<br/>
+	 * # Properties of this batch of jelly beans <br/>
+	 * properties={<br/>
+	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
+	 * &nbsp;&nbsp;    texture=shiny<br/>
+	 * &nbsp;&nbsp;    flavor=fruity<br/>
+	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
+	 * }<br/>
+	 * </tt>
+	 * <br/>
+	 * <i>java code:</i><br/>
+	 * <code>
+	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
+	 * <b>List&lt;String&gt; reviews = docRoot.getOrSet("label").getOrSet("reviews", defaultReviews);</b><br/>
+	 * for(String s : reviews){<br/>
+	 * &nbsp;&nbsp;System.out.println(s + "!");<br/>
+	 * }<br/>
+	 * </code>
+	 * @param key Variable name that identifies the variable being referenced.
+	 * @param defaultValue The value to initialize the field to if is doesn't 
+	 * already exist (ignored if it does already exist).
 	 * @return Returns the referenced field, if it exists, or the newly created 
 	 * one (with the provided default value) it it didn't exist.
 	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
 	 * but is not the correct type.
 	 */
 	public List<DaTextVariable> getOrSet(String key, List<DaTextVariable> defaultValue) throws UnsupportedOperationException{
-		writeLock.lock();
-		try {
-			if(exists(key)){
-			return get(key).asList();
-		} else {
-			put(key,defaultValue);
-			return get(key).asList();
-		}
-		} finally {
-			writeLock.unlock();
-		}
+		return getOrSet(key,defaultValue,null);
 	}
 	/**
 	 * Gets a field by the given field name, if it exists, 
@@ -541,17 +828,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * but is not the correct type.
 	 */
 	public String getOrSet(String key, String defaultValue) throws UnsupportedOperationException{
-		writeLock.lock();
-		try {
-			if(exists(key)){
-			return get(key).asText();
-		} else {
-			put(key,defaultValue);
-			return defaultValue;
-		}
-		} finally {
-			writeLock.unlock();
-		}
+		return getOrSet(key,defaultValue,null);
 	}
 	/**
 	 * Gets a field by the given field name, if it exists, 
@@ -589,17 +866,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * but is not correctly formatted.
 	 */
 	public  int getOrSet(String key, int defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		writeLock.lock();
-		try {
-			if(exists(key)){
-			return get(key).asInt();
-		} else {
-			put(key,defaultValue);
-			return defaultValue;
-		}
-		} finally {
-			writeLock.unlock();
-		}
+		return getOrSet(key,defaultValue,null);
 	}
 	/**
 	 * Gets a field by the given field name, if it exists, 
@@ -637,17 +904,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * but is not correctly formatted.
 	 */
 	public long getOrSet(String key, long defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		writeLock.lock();
-		try {
-			if(exists(key)){
-			return get(key).asLong();
-		} else {
-			put(key,defaultValue);
-			return defaultValue;
-		}
-		} finally {
-			writeLock.unlock();
-		}
+		return getOrSet(key,defaultValue,null);
 	}
 	/**
 	 * Gets a field by the given field name, if it exists, 
@@ -685,17 +942,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * but is not correctly formatted.
 	 */
 	public double getOrSet(String key, double defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		writeLock.lock();
-		try {
-			if(exists(key)){
-			return get(key).asNumber();
-		} else {
-			put(key,defaultValue);
-			return defaultValue;
-		}
-		} finally {
-			writeLock.unlock();
-		}
+		return getOrSet(key,defaultValue,null);
 	}
 	/**
 	 * Gets a field by the given field name, if it exists, 
@@ -734,19 +981,8 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * but is not correctly formatted.
 	 */
 	public byte[] getOrSet(String key, byte[] defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		writeLock.lock();
-		try {
-			if(exists(key)){
-			return get(key).asBinary();
-		} else {
-			put(key,defaultValue);
-			return defaultValue;
-		}
-		} finally {
-			writeLock.unlock();
-		}
+		return getOrSet(key,defaultValue,null);
 	}
-	
 	/**
 	 * Adds a new child object to this object, overwriting any 
 	 * pre-existing field or object with the same name.
@@ -783,48 +1019,54 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * field name.
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, List value);
+	public abstract void put(String key, List value, String annotation);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
 	 * field name.
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, String value);
+	public abstract void put(String key, String value, String annotation);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
 	 * field name.
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, int value);
+	public abstract void put(String key, int value, String annotation);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
 	 * field name.
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, long value);
+	public abstract void put(String key, long value, String annotation);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
 	 * field name.
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, double value);
+	public abstract void put(String key, double value, String annotation);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
 	 * field name.
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, byte[] value);
+	public abstract void put(String key, byte[] value, String annotation);
 	
 	/**
 	 * Deletes a stored variable

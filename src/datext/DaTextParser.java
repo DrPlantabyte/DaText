@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
  */
 public abstract class DaTextParser {
 
-	
+	// TODO better documentation
 	/**
 	 * <p/>
 	 * To preserve thread-safety, implementations must not use non-final 

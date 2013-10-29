@@ -6,7 +6,11 @@ package testbench.datext;
 
 import datext.*;
 import datext.util.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.*;
+import javax.swing.JFileChooser;
 
 /**
  *
@@ -18,7 +22,6 @@ public class TestMain {
 	 * @param args the command line arguments
 	 */
 	public static void main(String[] args) {
-		
 		// TODO code test logic here
 		System.out.println("Current locale is " + Locale.getDefault().toLanguageTag());
 		
@@ -29,11 +32,12 @@ public class TestMain {
 		byte[] tester = {1,64,33,-23,-126,127,0,24,54,-34,-42,-1};
 		testBinaryConversion(tester);
 		testListReader("[herp,derp\\,ferp,,  burp,\n{\n\tsir=spamalot\n\trank=knight\n\tsays=ni!\n\tnestedList=[1, 2, [7,8,9,], 4, 5]\n},\n[A, B, C],\n]");
+		testParsing();
 	}
 	
 	public static void testBinaryConversion(byte[] tester){
 		System.out.println("Input: "+Arrays.toString(tester));
-		String str = BinaryConverter.byteToString(tester);
+		String str = BinaryConverter.bytesToString(tester);
 		System.out.println("As String: "+str);
 		byte[] out = BinaryConverter.stringToBytes(/*"DE AD   CAF EB AB");//*/str);
 		System.out.println("Output: "+Arrays.toString(out));
@@ -91,5 +95,27 @@ public class TestMain {
 		System.out.println("escape test result: " + (
 				datext.util.Formatter.unescape(datext.util.Formatter.escape(str)).equals(str)));
 		
+	}
+	
+	static void testParsing(){
+		JFileChooser jfc = new JFileChooser();
+		jfc.showOpenDialog(null);
+		File f = jfc.getSelectedFile();
+		boolean result = true;
+		if(f == null || f.exists() == false){
+			return;
+		}
+		System.out.println("testing file parsing of file: "+f.getPath());
+		try{
+			DaTextParser p = new DefaultDaTextParser();
+			DaTextObject parsed = p.parse(new FileReader(f));
+			for(String key : parsed.getVariableNames()){
+				System.out.println(key+"="+datext.util.Formatter.escape(parsed.getText(key)));
+			}
+		}catch(IOException ex){
+			ex.printStackTrace(System.err);
+			result = false;
+		}
+		System.out.println("file parsing test result: " + result);
 	}
 }

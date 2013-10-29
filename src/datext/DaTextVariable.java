@@ -4,6 +4,7 @@
  */
 package datext;
 
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
@@ -247,7 +248,40 @@ public abstract class DaTextVariable {
 			
 			
 		}
+		
 		throw new UnsupportedOperationException("Not Done Yet");
+	}
+	/**
+	 * This method provides a thread-safe localized number parser for the 
+	 * locale of this DatextVariable.
+	 * @param number A string to be parsed as a number in the set locale
+	 * @return The numerical value of the provided String.
+	 * @throws NumberFormatException Thrown if the format is not compatible with 
+	 * the local (e.g. parsing the String <code>"1,250,010.25"</code> when the locale is set 
+	 * to <code>Locale.FRANCE</code>)
+	 */
+	public Number parseNumber(String number) throws NumberFormatException{
+		NumberFormat nf = NumberFormat.getNumberInstance(this.getLocale());
+		try{
+			
+			return nf.parse(number);
+		}catch(java.text.ParseException ex){
+			NumberFormatException nfe = new NumberFormatException("Could not parse the number "+number
+					+ " in the " + this.getLocale().getDisplayName() + " locale.");
+			nfe.initCause(ex);
+			throw nfe;
+		}
+	}
+	/**
+	 * This method provides a thread-safe localized number formatter for the 
+	 * locale of this DatextVariable.
+	 * @param number A number to convert to a localized String
+	 * @return The String representation of the number, as per the locale set 
+	 * for this DaTextVariable
+	 */
+	public String formatNumber(double number){
+		NumberFormat nf = NumberFormat.getNumberInstance(this.getLocale());
+		return nf.format(number);
 	}
 	
 }

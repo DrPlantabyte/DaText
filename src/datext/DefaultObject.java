@@ -4,6 +4,7 @@
  */
 package datext;
 
+import datext.util.BinaryConverter;
 import datext.util.ListHandler;
 import java.util.*;
 
@@ -13,6 +14,7 @@ import java.util.*;
  */
 public class DefaultObject extends DaTextObject {
 
+	// TODO: update documentation
 	/**
 	 * HashMap to hold all members
 	 */
@@ -73,7 +75,6 @@ public class DefaultObject extends DaTextObject {
 	 */
 	@Override
 	public DaTextObject deepCopy() {
-		// TODO: deep copy
 		readLock.lock();
 		try {
 			DefaultObject copy = new DefaultObject();
@@ -137,9 +138,10 @@ public class DefaultObject extends DaTextObject {
 	 *
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
 	@Override
-	public void put(String key, List value) {
+	public void put(String key, List value, String annotation) {
 		StringBuilder listString = new StringBuilder();
 		boolean first = true;
 		listString.append('[');
@@ -151,8 +153,7 @@ public class DefaultObject extends DaTextObject {
 			first = false;
 		}
 		listString.append(']');
-		put(key,new DefaultVariable(listString.toString()));
-		
+		put(key,new DefaultVariable(listString.toString(),annotation));
 	}
 
 	/**
@@ -161,15 +162,11 @@ public class DefaultObject extends DaTextObject {
 	 *
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
 	@Override
-	public void put(String key, String value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
-		}
+	public void put(String key, String value, String annotation) {
+		put(key,new DefaultVariable(value,annotation));
 	}
 
 	/**
@@ -178,15 +175,11 @@ public class DefaultObject extends DaTextObject {
 	 *
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
 	@Override
-	public void put(String key, int value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
-		}
+	public void put(String key, int value, String annotation) {
+		put(key,new DefaultVariable(((Number)value).toString(),annotation));
 	}
 
 	/**
@@ -195,15 +188,11 @@ public class DefaultObject extends DaTextObject {
 	 *
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
 	@Override
-	public void put(String key, long value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
-		}
+	public void put(String key, long value, String annotation) {
+		put(key,new DefaultVariable(((Number)value).toString(),annotation));
 	}
 
 	/**
@@ -212,15 +201,11 @@ public class DefaultObject extends DaTextObject {
 	 *
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
 	@Override
-	public void put(String key, double value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
-		}
+	public void put(String key, double value, String annotation) {
+		put(key,new DefaultVariable(this.formatNumber(value),annotation));
 	}
 
 	/**
@@ -229,15 +214,11 @@ public class DefaultObject extends DaTextObject {
 	 *
 	 * @param key Name of the field for use in the corresponding get method.
 	 * @param value Value to store
+	 * @param annotation Annotation that describes this variable. May be null.
 	 */
 	@Override
-	public void put(String key, byte[] value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
-		}
+	public void put(String key, byte[] value, String annotation) {
+		put(key,new DefaultVariable(BinaryConverter.bytesToString(value),annotation));
 	}
 
 	/**
@@ -249,7 +230,7 @@ public class DefaultObject extends DaTextObject {
 	public void remove(String key) {
 		writeLock.lock();
 		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			variables.remove(key);
 		} finally {
 			writeLock.unlock();
 		}

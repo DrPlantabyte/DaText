@@ -19,7 +19,7 @@ public class DefaultDaTextParser extends DaTextParser{
 	@Override
 	public DaTextObject parse(Reader in) throws IOException {
 		Parser p = new Parser(in);
-		return p.parse();
+		try{return p.parse();}finally{in.close();}
 	}
 	
 	

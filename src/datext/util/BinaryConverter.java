@@ -21,7 +21,7 @@ public abstract class BinaryConverter {
 		return (hex[(b >> 4)&0x0F]) + (hex[(b)&0x0F]);
 	}
 	
-	public static String byteToString(byte[] b){
+	public static String bytesToString(byte[] b){
 		StringBuilder sb = new StringBuilder();
 		for(int i = 0; i < b.length; i++){
 			sb.append(byteToString(b[i]));
