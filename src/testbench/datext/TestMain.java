@@ -98,7 +98,7 @@ public class TestMain {
 	}
 	
 	static void testParsing(){
-		JFileChooser jfc = new JFileChooser();
+		JFileChooser jfc = new JFileChooser(".");
 		jfc.showOpenDialog(null);
 		File f = jfc.getSelectedFile();
 		boolean result = true;

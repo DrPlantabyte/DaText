@@ -82,10 +82,29 @@ public class DefaultDaTextParser extends DaTextParser{
 		DaTextObject parse(int line) throws IOException, IllegalArgumentException {
 			DefaultObject obj = new DefaultObject();
 			ReadState stateBeforeComment = null;
+			// TODO: remove debugging stuff
+			ReadState old = null;
+			if(input.peekCurrent() == null){
+				// empty stream?
+				System.out.println("Empty file");
+			}
 			while(input.peekCurrent() != null){
+				
+				// TODO: remove debugging stuff
+				if(old != state){
+					System.out.println("\n\t"+state.name());
+					old = state;
+				}
+				System.out.print(input.peekCurrent());
+				
 				Character c = input.readNextChar();
-				if(c == '\n'){line++;}
-				if(c == null) break; // we're done (EOF)
+				if (c == null) {
+					 // we're done (EOF)
+					break;
+				}
+				if (c == '\n') {
+					line++;
+				}
 				
 				
 				// comment handling

@@ -30,7 +30,7 @@ public class StreamHandler {
 	int current = -1;
 
 	/**
-	 * this is the only constructor
+	 * this is the only constructor. You must invoke init()
 	 */
 	public StreamHandler(Reader instream) {
 		in = instream;
@@ -75,8 +75,13 @@ public class StreamHandler {
 	 *
 	 * @return Returns the current character in the stream, or null if the
 	 * stream has reached its end.
+	 * @throws IOException Thrown if there is an error reading the input stream
+	 * reader.
 	 */
-	public Character peekCurrent() {
+	public Character peekCurrent() throws IOException{
+		if (streamStarted == false){
+			readNextChar();
+		}
 		if (current < 0) {
 			return null;
 		}
@@ -88,8 +93,13 @@ public class StreamHandler {
 	 *
 	 * @return Returns the next character in the stream, or null if the stream
 	 * has reached its end.
+	 * @throws IOException Thrown if there is an error reading the input stream
+	 * reader.
 	 */
-	public Character peekNext() {
+	public Character peekNext()  throws IOException{
+		if (streamStarted == false){
+			readNextChar();
+		}
 		if (future < 0) {
 			return null;
 		}

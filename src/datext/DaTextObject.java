@@ -211,7 +211,16 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * a variable type.
 	 */
 	public String getText(String key) throws UnsupportedOperationException{
-		readLock.lock();try{return this.get(key).asText();}finally{readLock.unlock();}
+		readLock.lock();
+		try {
+			if (this.exists(key)) {
+				return this.get(key).asText();
+			} else {
+				return null;
+			}
+		} finally {
+			readLock.unlock();
+		}
 	}
 	/**
 	 * Gets a field by the given field name, if it exists, and parses it 

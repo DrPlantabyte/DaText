@@ -21,6 +21,7 @@ public class Formatter {
 	}
 	
 	public static String escape(String input, String... escapers){
+		if(input == null){return new String();}
 		String output = input.replace("\r\n", "\n");
 		output = output.replace("\\", "\\\\");
 		for(int i = 0; i < escapers.length; i++){
