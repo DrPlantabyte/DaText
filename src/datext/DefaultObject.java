@@ -96,6 +96,22 @@ public class DefaultObject extends DaTextObject {
 			writeLock.unlock();
 		}
 	}
+	/**
+	 * Adds a new child variable to this object, overwriting any 
+	 * pre-existing field or object with the same name.
+	 * @param key Name of the object for use in the corresponding get method.
+	 * @param value The variable to store.
+	 */
+	@Override
+	public void put(String key, DaTextVariable value) {
+		writeLock.lock();
+		try {
+			variables.put(key, value);
+		} finally {
+			writeLock.unlock();
+		}
+	}
+	
 
 	/**
 	 * Stores a variable in this object, overwriting any previous object or
@@ -106,12 +122,7 @@ public class DefaultObject extends DaTextObject {
 	 */
 	@Override
 	public void put(String key, DaTextObject value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
-		}
+		put(key,value);
 	}
 
 	/**

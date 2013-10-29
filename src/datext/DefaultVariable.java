@@ -13,7 +13,6 @@ import datext.util.*;
  * @author Christopher Collin Hall
  */
 public class DefaultVariable extends DaTextVariable{
-	
 	private String value = "";
 	/**
 	 * 
@@ -21,6 +20,11 @@ public class DefaultVariable extends DaTextVariable{
 	 */
 	public DefaultVariable(String contents){
 		value = contents;
+	}
+	
+	public DefaultVariable(String contents, String annotation){
+		value = contents;
+		this.setAnnotation(annotation);
 	}
 	
 	@Override

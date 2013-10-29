@@ -752,6 +752,13 @@ public abstract class DaTextObject extends DaTextVariable{
 	 */
 	public abstract void put(String key);
 	/**
+	 * Adds a new child variable to this object, overwriting any 
+	 * pre-existing field or object with the same name.
+	 * @param key Name of the object for use in the corresponding get method.
+	 * @param value The variable to store.
+	 */
+	public abstract void put(String key, DaTextVariable value);
+	/**
 	 * Adds a new child object to this object, overwriting any 
 	 * pre-existing field or object with the same name. This method assumes that 
 	 * <code>value</code> is a root object (use <code>adopt(value)</code> if it 
