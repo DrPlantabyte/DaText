@@ -111,6 +111,7 @@ public class TestMain {
 			DaTextObject parsed = p.parse(new FileReader(f));
 			System.out.println("\nresult of parsing:");
 			for(String key : parsed.getVariableNames()){
+				if(parsed.get(key).getAnnotation() != null) {System.out.println("# "+parsed.get(key).getAnnotation().replace("\n", "\n# "));}
 				System.out.println(key+"="+parsed.getText(key));
 			}
 		}catch(IOException ex){
