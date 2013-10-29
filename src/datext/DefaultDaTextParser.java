@@ -84,11 +84,9 @@ public class DefaultDaTextParser extends DaTextParser{
 			ReadState stateBeforeComment = null;
 			// TODO: remove debugging stuff
 			ReadState old = null;
-			if(input.peekCurrent() == null){
-				// empty stream?
-				System.out.println("Empty file");
-			}
-			while(input.peekCurrent() != null){
+			
+			boolean done = false;
+			do{
 				
 				// TODO: remove debugging stuff
 				if(old != state){
@@ -98,9 +96,11 @@ public class DefaultDaTextParser extends DaTextParser{
 				System.out.print(input.peekCurrent());
 				
 				Character c = input.readNextChar();
-				if (c == null) {
-					 // we're done (EOF)
-					break;
+				
+				if(c == null){
+					// pad the end of the stream with a new-line
+					done = true;
+					c = '\n';
 				}
 				if (c == '\n') {
 					line++;
@@ -137,6 +137,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							} else {
 								keynameBuffer = new StringBuilder();
 								state = ReadState.KEY;
+								keynameBuffer.append(c);
 							}
 						}
 						break;
@@ -146,7 +147,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							if(c == null){
 								throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file after escape character \\");
 							}
-						} else if(c == '\n'){
+						} else if(c == '\n' || c == null){
 							state = ReadState.WHITESPACE;
 						}
 						
@@ -161,7 +162,7 @@ public class DefaultDaTextParser extends DaTextParser{
 						} else if(c == '='){
 							state = ReadState.VALUE;
 							break;
-						} else if(c == '\n'){
+						} else if(c == '\n' || c == null){
 							// value-less kay
 							state = ReadState.WHITESPACE;
 							obj.put(keynameBuffer.toString().trim());
@@ -178,12 +179,19 @@ public class DefaultDaTextParser extends DaTextParser{
 							}
 						} else if(c == '"'){
 							state = ReadState.QUOTE;
+							break;
 						} else if(c == '\''){
 							state = ReadState.SEMIQUOTE;
+							break;
 						} else if(c == '['){
 							valueBuffer.append(c);
 							state = ReadState.SQUARE_BRACKET;
-						} else if(c == '\n'){
+							break;
+						} else if(c == '{'){
+							valueBuffer.append(c);
+							state = ReadState.CURLY_BRACKET;
+							break;
+						} else if(c == '\n' || c == null){
 							// store the value
 							if(annotBuffer.length() > 0){
 								obj.put(keynameBuffer.toString().trim(), new DefaultVariable(valueBuffer.toString().trim(), annotBuffer.toString().trim()));
@@ -230,12 +238,23 @@ public class DefaultDaTextParser extends DaTextParser{
 							}
 						} else if(c == ']'){
 							state = ReadState.VALUE;
-							valueBuffer.append(c);
+						}
+						valueBuffer.append(c);
+						break;
+					case CURLY_BRACKET:
+						// ignore new-lines when in list mode
+						if(c == '\\'){
+							c = input.readNextChar();
+							if(c == null){
+								throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file after escape character \\");
+							}
+						} else if(c == '}'){
+							state = ReadState.VALUE;
 						}
 						valueBuffer.append(c);
 						break;
 					case LINE_COMMENT:
-						if(input.peekNext() == '\n'){
+						if(input.peekNext() == '\n' || input.peekNext() == null){
 							// preserve end-line behavior of previous state
 							state = stateBeforeComment;
 							stateBeforeComment = null;
@@ -251,7 +270,7 @@ public class DefaultDaTextParser extends DaTextParser{
 						// Injection of additional enums?!
 						throw new UnsupportedOperationException("WTF!!! Where did '" + state.name() + "' come from!");
 				}
-			}
+			} while(!done);
 			return obj;
 		}
 	}

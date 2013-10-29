@@ -27,11 +27,11 @@ public class TestMain {
 		
 		System.out.println(Arrays.toString(BinaryConverter.stringToBytes("A0 00 0F 3E DE AD BE EF FE ED")));
 		
-		testEscaping("Pown'd the \n\tmaster][ and his {\\deleted\\} dog too.");
+	//	testEscaping("Pown'd the \n\tmaster][ and his {\\deleted\\} dog too.");
 		
 		byte[] tester = {1,64,33,-23,-126,127,0,24,54,-34,-42,-1};
-		testBinaryConversion(tester);
-		testListReader("[herp,derp\\,ferp,,  burp,\n{\n\tsir=spamalot\n\trank=knight\n\tsays=ni!\n\tnestedList=[1, 2, [7,8,9,], 4, 5]\n},\n[A, B, C],\n]");
+	//	testBinaryConversion(tester);
+	//	testListReader("[herp,derp\\,ferp,,  burp,\n{\n\tsir=spamalot\n\trank=knight\n\tsays=ni!\n\tnestedList=[1, 2, [7,8,9,], 4, 5]\n},\n[A, B, C],\n]");
 		testParsing();
 	}
 	
@@ -109,8 +109,9 @@ public class TestMain {
 		try{
 			DaTextParser p = new DefaultDaTextParser();
 			DaTextObject parsed = p.parse(new FileReader(f));
+			System.out.println("\nresult of parsing:");
 			for(String key : parsed.getVariableNames()){
-				System.out.println(key+"="+datext.util.Formatter.escape(parsed.getText(key)));
+				System.out.println(key+"="+parsed.getText(key));
 			}
 		}catch(IOException ex){
 			ex.printStackTrace(System.err);

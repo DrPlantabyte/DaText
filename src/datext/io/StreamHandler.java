@@ -74,14 +74,11 @@ public class StreamHandler {
 	 * stream.
 	 *
 	 * @return Returns the current character in the stream, or null if the
-	 * stream has reached its end.
+	 * stream has reached its end (or readNextChar has not been invoked yet).
 	 * @throws IOException Thrown if there is an error reading the input stream
 	 * reader.
 	 */
 	public Character peekCurrent() throws IOException{
-		if (streamStarted == false){
-			readNextChar();
-		}
 		if (current < 0) {
 			return null;
 		}
@@ -92,14 +89,11 @@ public class StreamHandler {
 	 * Returns the next character in the stream without reading from the stream.
 	 *
 	 * @return Returns the next character in the stream, or null if the stream
-	 * has reached its end.
+	 * has reached its end (or readNextChar has not been invoked yet).
 	 * @throws IOException Thrown if there is an error reading the input stream
 	 * reader.
 	 */
-	public Character peekNext()  throws IOException{
-		if (streamStarted == false){
-			readNextChar();
-		}
+	public Character peekNext() throws IOException {
 		if (future < 0) {
 			return null;
 		}
