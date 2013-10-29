@@ -14,7 +14,7 @@ import java.util.*;
 public class ListHandler {
     
 	
-	static final String[] LIST_CONTROL_CHARS = Formatter.concatonateStringArrays(Formatter.CONTROL_CHARS, ",");
+	public static final String[] LIST_CONTROL_CHARS = Formatter.concatonateStringArrays(Formatter.CONTROL_CHARS, ",");
     /**
      * 
      * @param listContent The text content of a list (including [ and ])

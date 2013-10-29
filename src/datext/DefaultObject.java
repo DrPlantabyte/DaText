@@ -4,6 +4,7 @@
  */
 package datext;
 
+import datext.util.ListHandler;
 import java.util.*;
 
 /**
@@ -75,7 +76,12 @@ public class DefaultObject extends DaTextObject {
 		// TODO: deep copy
 		readLock.lock();
 		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			DefaultObject copy = new DefaultObject();
+			copy.setAnnotation(this.getAnnotation());
+			for(String key : variables.keySet()){
+				copy.put(key, new DefaultVariable(variables.get(key).asText(),variables.get(key).getAnnotation()));
+			}
+			return copy;
 		} finally {
 			readLock.unlock();
 		}
@@ -91,7 +97,7 @@ public class DefaultObject extends DaTextObject {
 	public void put(String key) {
 		writeLock.lock();
 		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+			variables.put(key, null);
 		} finally {
 			writeLock.unlock();
 		}
@@ -134,12 +140,19 @@ public class DefaultObject extends DaTextObject {
 	 */
 	@Override
 	public void put(String key, List value) {
-		writeLock.lock();
-		try {
-			throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-		} finally {
-			writeLock.unlock();
+		StringBuilder listString = new StringBuilder();
+		boolean first = true;
+		listString.append('[');
+		for(Object o : value){
+			if(!first){
+				listString.append(',');
+			}
+			listString.append(datext.util.Formatter.escape(o.toString(),ListHandler.LIST_CONTROL_CHARS));
+			first = false;
 		}
+		listString.append(']');
+		put(key,new DefaultVariable(listString.toString()));
+		
 	}
 
 	/**

@@ -12,7 +12,9 @@ import java.util.List;
  * @author Christopher Collin Hall
  */
 public abstract class DaTextObject extends DaTextVariable{
-	
+	// TODO: change all put... methods to include annotation parameter and make 
+	// the annotatoin-free methods invoke the annotation methods with a null 
+	// annotation
 
 	/** Points to the DaText above this one. If this is the root object, 
 	 * then this will be null. */
