@@ -41,8 +41,6 @@ public class DefaultDaTextParser extends DaTextParser{
 		QUOTE,
 		/** reading a quoted string */
 		SEMIQUOTE,
-		/** reading an object */
-		CURLY_BRACKET,
 		/** reading a list */
 		SQUARE_BRACKET,
 		/** reading the value of a key */
@@ -61,7 +59,8 @@ public class DefaultDaTextParser extends DaTextParser{
 		ReadState state = ReadState.WHITESPACE; // starting FSM state
 		/** input stream */
 		final StreamHandler input;
-		
+		/** line number */
+		int line = 1;
 		Parser(Reader r) {
 			input = new StreamHandler(r);
 		}
@@ -76,10 +75,10 @@ public class DefaultDaTextParser extends DaTextParser{
 		StringBuilder valueBuffer = new StringBuilder();
 		
 		DaTextObject parse() throws IOException, IllegalArgumentException {
-			return parse(1);
+			return parse(false);
 		}
 		
-		DaTextObject parse(int line) throws IOException, IllegalArgumentException {
+		DaTextObject parse( boolean nested) throws IOException, IllegalArgumentException {
 			DefaultObject obj = new DefaultObject();
 			ReadState stateBeforeComment = null;
 		
@@ -96,7 +95,11 @@ public class DefaultDaTextParser extends DaTextParser{
 				
 				Character c = input.readNextChar();
 				
-				if(c == null){
+				if(nested && c == '}'){
+					// for parsing nested objects, a '}' signals the end of the nested object
+					done = true;
+					c = '\n';
+				}else if(c == null){
 					// pad the end of the stream with a new-line
 					done = true;
 					c = '\n';
@@ -179,7 +182,22 @@ public class DefaultDaTextParser extends DaTextParser{
 							break;
 						} else if(c == '{'){
 							valueBuffer.append(c);
-							state = ReadState.CURLY_BRACKET;
+							c = input.readNextChar();
+							if(c == null){
+								throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Expected '}'");
+							}
+							Parser np = new Parser(this.input);
+							np.line = line;
+							DaTextObject o = np.parse(true); // nested (recursive) parsing
+							line = np.line;
+							if(annotBuffer.length() > 0){
+								o.setAnnotation(annotBuffer.toString().trim());
+							}
+							obj.put(keynameBuffer.toString().trim(), o);
+							annotBuffer = new StringBuilder();
+							keynameBuffer = new StringBuilder();
+							valueBuffer = new StringBuilder();
+							state = ReadState.WHITESPACE;
 							break;
 						} else if(c == '\n'){
 							// store the value
@@ -205,6 +223,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							}
 						} else if(c == '"'){
 							state = ReadState.VALUE;
+							break;
 						}
 						valueBuffer.append(c);
 						break;
@@ -231,18 +250,6 @@ public class DefaultDaTextParser extends DaTextParser{
 						}
 						valueBuffer.append(c);
 						break;
-					case CURLY_BRACKET:
-						// ignore new-lines when in list mode
-						if(c == '\\'){
-							c = input.readNextChar();
-							if(c == null){
-								throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file after escape character \\");
-							}
-						} else if(c == '}'){
-							state = ReadState.VALUE;
-						}
-						valueBuffer.append(c);
-						break;
 					case LINE_COMMENT:
 						if(input.peekNext() == '\n' || input.peekNext() == null){
 							// preserve end-line behavior of previous state
@@ -263,8 +270,6 @@ public class DefaultDaTextParser extends DaTextParser{
 			} while(!done);
 			// handle broken syntax
 			switch (state){
-				case CURLY_BRACKET:
-					throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Was expecting '}'");
 				case SQUARE_BRACKET:
 					throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Was expecting ']'");
 				case QUOTE:

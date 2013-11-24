@@ -66,8 +66,8 @@ public class ListHandler {
 			}
 			start = end + 1;
 		}
-		// TODO: either return unmodifiable list or make changes to list update the data structure
-		return list;
+		
+		return java.util.Collections.unmodifiableList(list);
 	}
 	
 	public static String listToString(List<DaTextVariable> datextList){

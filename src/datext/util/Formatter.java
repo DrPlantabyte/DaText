@@ -11,6 +11,8 @@ package datext.util;
 public class Formatter {
 	
 	final static String[] CONTROL_CHARS = {"{","}","[","]","\n"};
+	final static String[] TEXT_CONTROL_CHARS = {"{","}","[","]","\n","'","\""};
+	final static String[] LIST_CONTROL_CHARS = {"[","]","\n",","};
 	
 	public static String unescape(String input){
 		return unescape(input,CONTROL_CHARS);
@@ -18,6 +20,22 @@ public class Formatter {
 	
 	public static String escape(String input){
 		return escape(input,CONTROL_CHARS);
+	}
+	
+	public static String unescapeText(String input){
+		return unescape(input,TEXT_CONTROL_CHARS);
+	}
+	
+	public static String escapeText(String input){
+		return escape(input,TEXT_CONTROL_CHARS);
+	}
+	
+	public static String unescapeList(String input){
+		return unescape(input,LIST_CONTROL_CHARS);
+	}
+	
+	public static String escapeList(String input){
+		return escape(input,LIST_CONTROL_CHARS);
 	}
 	
 	public static String escape(String input, String... escapers){

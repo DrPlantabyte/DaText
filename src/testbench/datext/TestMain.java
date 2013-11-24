@@ -9,6 +9,8 @@ import datext.util.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.*;
 import javax.swing.JFileChooser;
 
@@ -110,10 +112,20 @@ public class TestMain {
 			DaTextParser p = new DefaultDaTextParser();
 			DaTextObject parsed = p.parse(new FileReader(f));
 			System.out.println("\nresult of parsing:");
-			for(String key : parsed.getVariableNames()){
-				if(parsed.get(key).getAnnotation() != null) {System.out.println("# "+parsed.get(key).getAnnotation().replace("\n", "\n# "));}
-				System.out.println(key+"="+parsed.getText(key));
-			}
+			parsed.serialize(System.out, true, 0);
+			
+			// check if reading the serial stream creates an identical object
+			String firstSerial;
+			String secondSerial;
+			StringWriter w = new StringWriter();
+			parsed.serialize(w, true, 0);
+			firstSerial = w.toString();
+			StringReader r = new StringReader(firstSerial);
+			DaTextObject parsed2 = p.parse(r);
+			StringWriter w2 = new StringWriter();
+			parsed2.serialize(w2, true, 0);
+			secondSerial = w2.toString();
+			result = firstSerial.equals(secondSerial);
 		}catch(IOException ex){
 			ex.printStackTrace(System.err);
 			result = false;

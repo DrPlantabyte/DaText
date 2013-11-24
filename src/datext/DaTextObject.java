@@ -4,6 +4,7 @@
  */
 package datext;
 
+import datext.util.Formatter;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -13,9 +14,7 @@ import java.util.Locale;
  * @author Christopher Collin Hall
  */
 public abstract class DaTextObject extends DaTextVariable{
-	// TODO: change all put... methods to include annotation parameter and make 
-	// the annotatoin-free methods invoke the annotation methods with a null 
-	// annotation
+	
 	
 	// TODO: update documentation
 
@@ -1107,24 +1106,98 @@ public abstract class DaTextObject extends DaTextVariable{
 	@Override public DaTextObject asObject() throws UnsupportedOperationException{
 		return this;
 	}
-	
+	/**
+	 * Gets the value of this object as a String (serialized output)
+	 * @return The value stored in this variable.
+	 */
 	@Override
-	public String asText() throws UnsupportedOperationException {
+	public String asText() {
 		// TODO: replace with stream output (including escapes)
 		readLock.lock();
 		try{
 			StringBuilder sb = new StringBuilder();
 			sb.append("{");
-			for(String n : this.getVariableNames()){
-				sb.append(n).append("=").append(get(n).asText().replace("\n", "\\\n").replace("\"", "\\\"")).append("\n");
-			}
+			
 			sb.append("}");
 			return sb.toString();
 		}finally{
 			readLock.unlock();
 		}
 	}
-	
+	/**
+	 * Writes this DaTextObjext as a string to the given stream writer. 
+	 * The output is valid DaText that would create an identical copy if parsed.
+	 * @param outputStream A writer to the stream.
+	 * @param doIndent If <code>true</code>, then tab characters will be 
+	 * inserted to improve human legibility.
+	 * @param indent If <code>doIndent</code> is <code>true</code>, then 
+	 * this is the number of tabs to indent (typically the toplevel DaText 
+	 * object would be written with an indent of 0)
+	 * @throws java.io.IOException Thrown if there was an error writing to the 
+	 * stream.
+	 */
+	public void serialize(java.io.Writer outputStream, boolean doIndent, int indent) throws java.io.IOException{
+			readLock.lock();
+		try {
+			Collection<String> vars = this.getVariableNames();
+			for(String key : vars){
+				DaTextVariable v = this.get(key);
+				if (v != null) {
+					String annote = v.getAnnotation();
+					if (annote != null) {
+						if (doIndent) {
+							for (int i = 0; i < indent; i++) {
+								outputStream.write("\t");
+							}
+						}
+						outputStream.write(annote);
+						outputStream.write("\r\n");
+					}
+				}
+				if(doIndent){
+					for(int i = 0; i < indent; i++){
+						outputStream.write("\t");
+					}
+				}
+				outputStream.write(key);
+				if(v != null){
+					outputStream.write("=");
+					if(v instanceof DaTextObject){
+						// serialize nested object
+						DaTextObject o = (DaTextObject)v;
+						outputStream.write("{\r\n");
+						o.serialize(outputStream, doIndent, indent+1);
+						outputStream.write("}");
+					} else {
+						// write variable in appropriate locale
+						outputStream.write(Formatter.escape(v.asText()));
+					}
+				}
+				outputStream.write("\r\n");
+			}
+		} finally {
+			readLock.unlock();
+		}
+	}
+	/**
+	 * Writes this DaTextObjext as a string to the given stream writer. 
+	 * The output is valid DaText that would create an identical copy if parsed.
+	 * This is a wrapper for the serialize(Writer, doIndent, indent) 
+	 * method, provided mostly for debugging convenience.
+	 * @param outputStream A PrintStream to take the serialized text.
+	 * @param doIndent If <code>true</code>, then tab characters will be 
+	 * inserted to improve human legibility.
+	 * @param indent If <code>doIndent</code> is <code>true</code>, then 
+	 * this is the number of tabs to indent (typically the toplevel DaText 
+	 * object would be written with an indent of 0)
+	 * @throws java.io.IOException Thrown if there was an error writing to the 
+	 * stream.
+	 */
+	public final void serialize(java.io.PrintStream outputStream, boolean doIndent, int indent) throws java.io.IOException{
+		java.io.PrintWriter w = new java.io.PrintWriter(outputStream);
+		serialize(w,doIndent,indent);
+		w.flush();
+	}
 	/**
 	 * Throws an UnsupportedOperationException because object types are not 
 	 * convertible. 

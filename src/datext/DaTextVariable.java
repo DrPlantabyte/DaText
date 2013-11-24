@@ -129,10 +129,8 @@ public abstract class DaTextVariable {
 	/**
 	 * Gets the value of this variable as a String
 	 * @return The value stored in this variable.
-	 * @throws UnsupportedOperationException Thrown if the value is not 
-	 * a compatible type.
 	 */
-	public abstract String asText() throws UnsupportedOperationException;
+	public abstract String asText();
 	/**
 	 * Gets the value of this variable as an integer
 	 * @return The value stored in this variable.
