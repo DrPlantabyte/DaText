@@ -82,7 +82,7 @@ public class DefaultDaTextParser extends DaTextParser{
 		DaTextObject parse(int line) throws IOException, IllegalArgumentException {
 			DefaultObject obj = new DefaultObject();
 			ReadState stateBeforeComment = null;
-			// TODO: remove debugging stuff
+		
 			ReadState old = null;
 			
 			boolean done = false;
@@ -261,6 +261,17 @@ public class DefaultDaTextParser extends DaTextParser{
 						throw new UnsupportedOperationException("WTF!!! Where did '" + state.name() + "' come from!");
 				}
 			} while(!done);
+			// handle broken syntax
+			switch (state){
+				case CURLY_BRACKET:
+					throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Was expecting '}'");
+				case SQUARE_BRACKET:
+					throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Was expecting ']'");
+				case QUOTE:
+					throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Was expecting '\"'");
+				case SEMIQUOTE:
+					throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file. Was expecting '");
+			}
 			return obj;
 		}
 	}
