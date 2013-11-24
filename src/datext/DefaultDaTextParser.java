@@ -88,12 +88,11 @@ public class DefaultDaTextParser extends DaTextParser{
 			boolean done = false;
 			do{
 				
-				// TODO: remove debugging stuff
 				if(old != state){
-					System.out.println("\n\t"+state.name());
+	//				System.out.println("\n\t"+state.name());
 					old = state;
 				}
-				System.out.print(input.peekCurrent());
+	//			System.out.print(input.peekCurrent());
 				
 				Character c = input.readNextChar();
 				
@@ -125,15 +124,6 @@ public class DefaultDaTextParser extends DaTextParser{
 						if(!Character.isWhitespace(c)){
 							if(c == '#'){
 								state = ReadState.ANNOTATION;
-						//	} else if(c == '{'){	// don't bother parsing nexted objects (that's done upon request
-						//		// nested object
-						//		if(keynameBuffer.length() == 0){
-						//			throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: object variable without a variable name");
-						//		}
-						//		Parser p = new DefaultDaTextParser.Parser(input);
-						//		p.parse(line);
-						//		obj.put(keynameBuffer.toString().trim(), p.toDaTextObject());
-						//		// will use up the stream until the next '}'
 							} else {
 								keynameBuffer = new StringBuilder();
 								state = ReadState.KEY;
@@ -147,7 +137,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							if(c == null){
 								throw new IllegalArgumentException("DaText Format Error on line ["+line+"]: Unexpected end-of-file after escape character \\");
 							}
-						} else if(c == '\n' || c == null){
+						} else if(c == '\n' ){
 							state = ReadState.WHITESPACE;
 						}
 						
@@ -162,7 +152,7 @@ public class DefaultDaTextParser extends DaTextParser{
 						} else if(c == '='){
 							state = ReadState.VALUE;
 							break;
-						} else if(c == '\n' || c == null){
+						} else if(c == '\n' ){
 							// value-less kay
 							state = ReadState.WHITESPACE;
 							obj.put(keynameBuffer.toString().trim());
@@ -191,7 +181,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							valueBuffer.append(c);
 							state = ReadState.CURLY_BRACKET;
 							break;
-						} else if(c == '\n' || c == null){
+						} else if(c == '\n'){
 							// store the value
 							if(annotBuffer.length() > 0){
 								obj.put(keynameBuffer.toString().trim(), new DefaultVariable(valueBuffer.toString().trim(), annotBuffer.toString().trim()));
