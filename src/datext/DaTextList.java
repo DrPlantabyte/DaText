@@ -16,7 +16,11 @@ import java.util.ListIterator;
  */
 public abstract class DaTextList extends DaTextVariable implements java.util.List<DaTextVariable>{
 	// TODO documentation
-	ArrayList<DaTextVariable> listData = new ArrayList<>();
+	// TODO make default implementation
+	// TODO make default implementation localize its numbers
+	// TODO update parse to use the new DaText lists
+	// TODO update other classes to use the new DaText lists
+	protected ArrayList<DaTextVariable> listData = new ArrayList<>();
 
 	
 	public abstract void add(String value, String annotation);
