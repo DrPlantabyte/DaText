@@ -75,11 +75,19 @@ public class DefaultDaTextParser extends DaTextParser{
 		StringBuilder valueBuffer = new StringBuilder();
 		
 		DaTextObject parse() throws IOException, IllegalArgumentException {
-			return parse(false);
+			return parse(false,false);
 		}
 		
-		DaTextObject parse( boolean nested) throws IOException, IllegalArgumentException {
+		
+		
+		DaTextObject parse( boolean nestedObject, boolean nestedList) throws IOException, IllegalArgumentException {
 			DefaultObject obj = new DefaultObject();
+			DaTextList list = null;
+			if(nestedList){
+				list = new DefaultList();
+			}
+						
+			
 			ReadState stateBeforeComment = null;
 		
 			ReadState old = null;
@@ -95,10 +103,13 @@ public class DefaultDaTextParser extends DaTextParser{
 				
 				Character c = input.readNextChar();
 				
-				if(nested && c == '}'){
+				if(nestedObject && c == '}'){
 					// for parsing nested objects, a '}' signals the end of the nested object
 					done = true;
-					c = '\n';
+				}else if(nestedList && c == ']'){
+					// for parsing nested lists, a ']' signals the end of the nested list
+					obj.put("L", list);
+					done = true;
 				}else if(c == null){
 					// pad the end of the stream with a new-line
 					done = true;
@@ -129,7 +140,11 @@ public class DefaultDaTextParser extends DaTextParser{
 								state = ReadState.ANNOTATION;
 							} else {
 								keynameBuffer = new StringBuilder();
-								state = ReadState.KEY;
+								if(nestedList){
+									state = ReadState.VALUE;
+								} else {
+									state = ReadState.KEY;
+								}
 								keynameBuffer.append(c);
 							}
 						}
@@ -178,7 +193,20 @@ public class DefaultDaTextParser extends DaTextParser{
 							break;
 						} else if(c == '['){
 							valueBuffer.append(c);
-							state = ReadState.SQUARE_BRACKET;
+							Parser np = new Parser(this.input);
+							np.line = line;
+							np.state = ReadState.SQUARE_BRACKET;
+							DaTextObject wrapper = np.parse(false, true); // recursive list parsing
+							DaTextList L = wrapper.getList("L");
+							line = np.line;
+							if(annotBuffer.length() > 0){
+								L.setAnnotation(annotBuffer.toString().trim());
+							}
+							obj.put(keynameBuffer.toString().trim(), L);
+							annotBuffer = new StringBuilder();
+							keynameBuffer = new StringBuilder();
+							valueBuffer = new StringBuilder();
+							state = ReadState.WHITESPACE;
 							break;
 						} else if(c == '{'){
 							valueBuffer.append(c);
@@ -188,18 +216,22 @@ public class DefaultDaTextParser extends DaTextParser{
 							}
 							Parser np = new Parser(this.input);
 							np.line = line;
-							DaTextObject o = np.parse(true); // nested (recursive) parsing
+							DaTextObject o = np.parse(true,false); // nested (recursive) parsing
 							line = np.line;
 							if(annotBuffer.length() > 0){
 								o.setAnnotation(annotBuffer.toString().trim());
 							}
-							obj.put(keynameBuffer.toString().trim(), o);
+							if (nestedList) {
+								list.add(o);
+							} else {
+								obj.put(keynameBuffer.toString().trim(), o);
+							}
 							annotBuffer = new StringBuilder();
 							keynameBuffer = new StringBuilder();
 							valueBuffer = new StringBuilder();
 							state = ReadState.WHITESPACE;
 							break;
-						} else if(c == '\n'){
+						} else if(!nestedList && c == '\n'){
 							// store the value
 							if(annotBuffer.length() > 0){
 								obj.put(keynameBuffer.toString().trim(), new DefaultVariable(valueBuffer.toString().trim(), annotBuffer.toString().trim()));
@@ -211,7 +243,26 @@ public class DefaultDaTextParser extends DaTextParser{
 							keynameBuffer = new StringBuilder();
 							valueBuffer = new StringBuilder();
 							break;
-						} 
+						} else if(nestedList && c == ','){
+							// check for empty value (do not store empties)
+							if (valueBuffer.toString().trim().length() <= 0){
+								// empty list item, continue without adding a list entry
+								state = ReadState.WHITESPACE;
+								annotBuffer = new StringBuilder();
+								valueBuffer = new StringBuilder();
+								break;
+							}
+							// store the value
+							if(annotBuffer.length() > 0){
+								list.add(new DefaultVariable(valueBuffer.toString().trim(), annotBuffer.toString().trim()));
+							} else {
+								list.add(new DefaultVariable(valueBuffer.toString().trim()));
+							}
+							state = ReadState.WHITESPACE;
+							annotBuffer = new StringBuilder();
+							valueBuffer = new StringBuilder();
+							break;
+						}
 						valueBuffer.append(c);
 						
 						break;
@@ -247,6 +298,8 @@ public class DefaultDaTextParser extends DaTextParser{
 							}
 						} else if(c == ']'){
 							state = ReadState.VALUE;
+						} else if(c == ','){
+							// 
 						}
 						valueBuffer.append(c);
 						break;

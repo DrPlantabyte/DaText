@@ -171,7 +171,7 @@ public abstract class DaTextVariable {
 	 * @throws UnsupportedOperationException Thrown if the value is not 
 	 * a compatible type.
 	 */
-	public abstract List<DaTextVariable> asList() throws UnsupportedOperationException;
+	public abstract DaTextList asList() throws UnsupportedOperationException;
 	/**
 	 * Gets the value of this variable as a DaText object
 	 * @return The value stored in this variable.
@@ -217,7 +217,7 @@ public abstract class DaTextVariable {
 	 * Sets the value of this variable
 	 * @param value The value to store in this variable.
 	 */
-	public abstract void set(List<DaTextVariable> value);
+	public abstract void set(DaTextList value);
 	/**
 	 * Sets the value of this variable
 	 * @param value The value to store in this variable.

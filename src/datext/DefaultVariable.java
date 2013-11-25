@@ -84,7 +84,8 @@ public class DefaultVariable extends DaTextVariable{
 	}
 
 	@Override
-	public List<DaTextVariable> asList() throws UnsupportedOperationException {
+	public DaTextList asList() throws UnsupportedOperationException {
+		// TODO: parse text as list
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 
@@ -114,7 +115,7 @@ public class DefaultVariable extends DaTextVariable{
 	}
 
 	@Override
-	public void set(List<DaTextVariable> value) {
+	public void set(DaTextList value) {
 		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 	}
 

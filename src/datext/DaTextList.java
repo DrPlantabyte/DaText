@@ -20,243 +20,178 @@ public abstract class DaTextList extends DaTextVariable implements java.util.Lis
 	// TODO make default implementation localize its numbers
 	// TODO update parse to use the new DaText lists
 	// TODO update other classes to use the new DaText lists
-	protected ArrayList<DaTextVariable> listData = new ArrayList<>();
-
 	
+
+	/**
+	 * Adds a new element to this list.
+	 * @param value The value to add to the list
+	 * @param annotation Annotation to go with this variable. Can be null.
+	 */
 	public abstract void add(String value, String annotation);
+	/**
+	 * Adds a new element to this list.
+	 * @param value The value to add to the list
+	 * @param annotation Annotation to go with this variable. Can be null.
+	 */
 	public abstract void add(byte[] value, String annotation);
+	/**
+	 * Adds a new element to this list.
+	 * @param value The value to add to the list
+	 * @param annotation Annotation to go with this variable. Can be null.
+	 */
 	public abstract void add(double value, String annotation);
+	/**
+	 * Adds a new element to this list.
+	 * @param value The value to add to the list
+	 * @param annotation Annotation to go with this variable. Can be null.
+	 */
 	public abstract void add(long value, String annotation);
+	/**
+	 * Adds a new element to this list.
+	 * @param value The value to add to the list
+	 * @param annotation Annotation to go with this variable. Can be null.
+	 */
 	public abstract void add(int value, String annotation);
-	public abstract void add(DaTextVariable value, String annotation);
 	
-	///// LIST METHODS /////
-	@Override
-	public int size() {
-		readLock.lock();
-		try {
-			return listData.size();
-		} finally {
-			readLock.unlock();
-		}
+	@Override public DaTextList asList(){
+		return this;
 	}
-
-	@Override
-	public boolean isEmpty() {
-		readLock.lock();
-		try {
-			return listData.isEmpty();
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean contains(Object o) {
-		readLock.lock();
-		try {
-			return listData.contains(o);
-		} finally {
-			readLock.unlock();
-		}
-	}
-	/**
-	 * WARNING: THIS METHOD IS NOT THREAD SAFE!!!
-	 * @return 
-	 */
-	@Override
-	public Iterator iterator() {
-		return listData.iterator();
-	}
-
-	@Override
-	public DaTextVariable[] toArray() {
-		readLock.lock();
-		try {
-			return listData.toArray(new DaTextVariable[listData.size()]);
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public Object[] toArray(Object[] a) {
-		readLock.lock();
-		try {
-			return listData.toArray(a);
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean add(DaTextVariable e) {
-		writeLock.lock();
-		try {
-			return listData.add(e);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean remove(Object o) {
-		writeLock.lock();
-		try {
-			return listData.remove(o);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean containsAll(Collection c) {
-		readLock.lock();
-		try {
-			return listData.containsAll(c);
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean addAll(Collection c) {
-		writeLock.lock();
-		try {
-			return listData.addAll(c);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean addAll(int index, Collection c) {
-		writeLock.lock();
-		try {
-			return listData.addAll(index, c);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean removeAll(Collection c) {
-		writeLock.lock();
-		try {
-			return listData.removeAll(c);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public boolean retainAll(Collection c) {
-		writeLock.lock();
-		try {
-			return listData.retainAll(c);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public void clear() {
-		writeLock.lock();
-		try {
-			listData.clear();
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public DaTextVariable get(int index) {
-		readLock.lock();
-		try {
-			return listData.get(index);
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public DaTextVariable set(int index, DaTextVariable element) {
-		writeLock.lock();
-		try {
-			return listData.set(index, element);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public void add(int index, DaTextVariable element) {
-		writeLock.lock();
-		try {
-			listData.add(index, element);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public DaTextVariable remove(int index) {
-		writeLock.lock();
-		try {
-			return listData.remove(index);
-		} finally {
-			writeLock.unlock();
-		}
-	}
-
-	@Override
-	public int indexOf(Object o) {
-		readLock.lock();
-		try {
-			return listData.indexOf(o);
-		} finally {
-			readLock.unlock();
-		}
-	}
-
-	@Override
-	public int lastIndexOf(Object o) {
-		readLock.lock();
-		try {
-			return listData.lastIndexOf(o);
-		} finally {
-			readLock.unlock();
-		}
-	}
-	/**
-	 * WARNING: THIS METHOD IS NOT THREAD SAFE!!!
-	 * @return 
-	 */
-	@Override
-	public ListIterator listIterator() {
-		return listData.listIterator();
-	}
-
-	/**
-	 * WARNING: THIS METHOD IS NOT THREAD SAFE!!!
-	 * @param index
-	 * @return 
-	 */
-	@Override
-	public ListIterator listIterator(int index) {
-		return listData.listIterator(index);
-	}
-
-	@Override
-	public List subList(int fromIndex, int toIndex) {
-		readLock.lock();
-		try {
-			return listData.subList(fromIndex, toIndex);
-		} finally {
-			readLock.unlock();
-		}
-		
-	}
-		
 	
+	public String getAsText(int index){
+		return this.get(index).asText();
+	}
+	
+	public long getAsLong(int index) throws UnsupportedOperationException, NumberFormatException{
+		return this.get(index).asLong();
+	}
+	public int getAsInt(int index) throws UnsupportedOperationException, NumberFormatException{
+		return this.get(index).asInt();
+	}
+	public double getAsNumber(int index) throws UnsupportedOperationException, NumberFormatException{
+		return this.get(index).asNumber();
+	}
+	public byte[] getAsBinary(int index) throws UnsupportedOperationException, NumberFormatException{
+		return this.get(index).asBinary();
+	}
+	public DaTextObject getAsObject(int index) throws UnsupportedOperationException{
+		return this.get(index).asObject();
+	}
+	
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public int asInt() throws UnsupportedOperationException, NumberFormatException {
+		throw new UnsupportedOperationException(DaTextList.class.getSimpleName() 
+				+ " is not convertable to numerical value");
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public long asLong() throws UnsupportedOperationException, NumberFormatException {
+		throw new UnsupportedOperationException(DaTextList.class.getSimpleName() 
+				+ " is not convertable to numerical value");
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public double asNumber() throws UnsupportedOperationException, NumberFormatException {
+		throw new UnsupportedOperationException(DaTextList.class.getSimpleName() 
+				+ " is not convertable to numerical value");
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public byte[] asBinary() throws UnsupportedOperationException, NumberFormatException {
+		throw new UnsupportedOperationException(DaTextList.class.getSimpleName() 
+				+ " is not convertable to numerical value");
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public DaTextObject asObject() throws UnsupportedOperationException {
+		throw new UnsupportedOperationException(DaTextList.class.getSimpleName() 
+				+ " is not convertable to " + DaTextObject.class.getSimpleName());
+	}
+	
+	
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public void set(String value) {
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public void set(int value) {
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public void set(long value) {
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public void set(double value) {
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
+	}
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public void set(byte[] value) {
+		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
+
+	
+
+	/**
+	 * Throws an UnsupportedOperationException because list types are not 
+	 * convertible. 
+	 */
+	@Deprecated
+	@Override
+	public void set(DaTextObject value) {
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
+	}
 }

@@ -176,7 +176,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * @throws UnsupportedOperationException Thrown if the indicated variable is not 
 	 * a list type.
 	 */
-	public List<DaTextVariable> getList(String key) throws UnsupportedOperationException{
+	public DaTextList getList(String key) throws UnsupportedOperationException{
 		readLock.lock();try{return this.get(key).asList();}finally{readLock.unlock();}
 	}
 	/**
@@ -1248,9 +1248,9 @@ public abstract class DaTextObject extends DaTextVariable{
 	 */
 	@Deprecated
 	@Override
-	public List<DaTextVariable> asList() throws UnsupportedOperationException {
+	public DaTextList asList() throws UnsupportedOperationException {
 		throw new UnsupportedOperationException(DaTextObject.class.getSimpleName() 
-				+ " is not convertable to list value");
+				+ " is not convertable to " + DaTextList.class.getSimpleName());
 	}
 
 	/**
@@ -1309,7 +1309,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 */
 	@Deprecated
 	@Override
-	public void set(List<DaTextVariable> value) {
+	public void set(DaTextList value) {
 		throw new UnsupportedOperationException("Cannot change value of "+DaTextObject.class.getSimpleName()); 
 	}
 
