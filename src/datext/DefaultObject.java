@@ -24,7 +24,7 @@ public class DefaultObject extends DaTextObject {
 	 * Default constructor
 	 */
 	public DefaultObject() {
-		variables = new HashMap<>();
+		variables = new LinkedHashMap<>();
 	}
 
 	/**
