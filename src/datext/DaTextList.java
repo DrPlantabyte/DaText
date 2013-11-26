@@ -240,7 +240,7 @@ public abstract class DaTextList extends DaTextVariable implements java.util.Lis
 					if(v instanceof DaTextObject){
 						outputStream.write("\r\n");
 					}
-					v.serialize(outputStream, doIndent, indent+1);
+					outputStream.write(Formatter.escapeList(v.asText()));
 				}
 				outputStream.write("]\r\n");
 			}
