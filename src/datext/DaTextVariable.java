@@ -7,6 +7,7 @@ package datext;
 import datext.util.Formatter;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -27,35 +28,8 @@ public abstract class DaTextVariable {
 	/** All setter methods must use this lock (or their own Read/Write Lock) to be thread-safe */
 	protected final WriteLock writeLock = readWriteLock.writeLock();
 	
-	/** Locale for parsing data, default to English (programming standard) */
-	private java.util.Locale locale = java.util.Locale.ENGLISH;
-	/**
-	 * Gets the locale being used by this object for parsing numbers.
-	 * <p/>This method is thread-safe.
-	 * @return This object's locale
-	 */
-	public java.util.Locale getLocale(){
-		readLock.lock();
-		try{
-			return locale;
-		}finally {
-			readLock.unlock();
-		}
-	}
-	/**
-	 * Sets the locale used by this object (but not necessarily child 
-	 * objects) for parsing numbers.
-	 * <p/>This method is thread-safe.
-	 * @param newLocale The new locale to use.
-	 */
-	public void setLocale(java.util.Locale newLocale){
-		writeLock.lock();
-		try{
-			locale = newLocale;
-		}finally {
-			writeLock.unlock();
-		}
-	}
+	
+	
 
 	/** Annotation content */
 	private String annotation = null;
@@ -259,14 +233,14 @@ public abstract class DaTextVariable {
 	 * the local (e.g. parsing the String <code>"1,250,010.25"</code> when the locale is set 
 	 * to <code>Locale.FRANCE</code>)
 	 */
-	public Number parseNumber(String number) throws NumberFormatException{
-		NumberFormat nf = NumberFormat.getNumberInstance(this.getLocale());
+	public Number parseNumber(String number, Locale locale) throws NumberFormatException{
+		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		try{
 			
 			return nf.parse(number);
 		}catch(java.text.ParseException ex){
 			NumberFormatException nfe = new NumberFormatException("Could not parse the number "+number
-					+ " in the " + this.getLocale().getDisplayName() + " locale.");
+					+ " in the " + locale + " locale.");
 			nfe.initCause(ex);
 			throw nfe;
 		}
@@ -278,8 +252,8 @@ public abstract class DaTextVariable {
 	 * @return The String representation of the number, as per the locale set 
 	 * for this DaTextVariable
 	 */
-	public String formatNumber(double number){
-		NumberFormat nf = NumberFormat.getNumberInstance(this.getLocale());
+	public String formatNumber(double number, Locale locale){
+		NumberFormat nf = NumberFormat.getNumberInstance(locale);
 		return nf.format(number);
 	}
 	

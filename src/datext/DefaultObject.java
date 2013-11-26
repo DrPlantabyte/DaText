@@ -130,6 +130,7 @@ public class DefaultObject extends DaTextObject {
 	@Override
 	public void put(String key, DaTextObject value) {
 		put(key,(DaTextVariable)value);
+		value.setParent(this);
 	}
 
 	/**

@@ -3,6 +3,7 @@ package datext;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.util.Locale;
 
 /**
  *
@@ -21,14 +22,14 @@ public abstract class DaTextParser {
 	 * @return
 	 * @throws IOException 
 	 */
-	public abstract DaTextObject parse(Reader in) throws IOException;
+	public abstract DaTextObject parse(Reader in, Locale locale) throws IOException;
 	
-	public DaTextObject parse(String input) throws IOException{
+	public DaTextObject parse(String input, Locale locale) throws IOException{
 		StringReader sin = new StringReader(input);
-		return parse(sin);
+		return parse(sin,locale);
 	}
 	
-	public DaTextObject parse(InputStream in, Charset cs) throws IOException{
-		return parse(new InputStreamReader(in,cs));
+	public DaTextObject parse(InputStream in, Charset cs, Locale locale) throws IOException{
+		return parse(new InputStreamReader(in,cs),locale);
 	}
 }

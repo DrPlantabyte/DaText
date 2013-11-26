@@ -7,6 +7,7 @@ package datext;
 import datext.io.StreamHandler;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Locale;
 
 /**
  * Uses a FSM to parse a character stream to a DaText tree.
@@ -15,9 +16,11 @@ import java.io.Reader;
 public class DefaultDaTextParser extends DaTextParser{
 
 	
-	
+	final Locale locale;
+			
 	@Override
-	public DaTextObject parse(Reader in) throws IOException {
+	public DaTextObject parse(Reader in, Locale localFormat) throws IOException {
+		this.locale = localFormat;
 		Parser p = new Parser(in);
 		try{return p.parse();}finally{in.close();}
 	}
