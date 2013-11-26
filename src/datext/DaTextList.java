@@ -4,6 +4,7 @@
  */
 package datext;
 
+import datext.util.Formatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -194,4 +195,58 @@ public abstract class DaTextList extends DaTextVariable implements java.util.Lis
 	public void set(DaTextObject value) {
 		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
 	}
+	
+	/**
+	 * Writes this DaTextObjext as a string to the given stream writer. 
+	 * The output is valid DaText that would create an identical copy if parsed.
+	 * @param outputStream A writer to the stream.
+	 * @param doIndent If <code>true</code>, then tab characters will be 
+	 * inserted to improve human legibility.
+	 * @param indent If <code>doIndent</code> is <code>true</code>, then 
+	 * this is the number of tabs to indent (typically the toplevel DaText 
+	 * object would be written with an indent of 0)
+	 * @throws java.io.IOException Thrown if there was an error writing to the 
+	 * stream.
+	 */
+	@Override public void serialize(java.io.Writer outputStream, boolean doIndent, int indent) throws java.io.IOException{
+			readLock.lock();
+		try {
+			outputStream.write("[");
+			boolean first = true;
+			for(DaTextVariable v : this){
+				if (v != null) {
+					String annote = v.getAnnotation();
+					if (annote != null) {
+						if (doIndent) {
+							for (int i = 0; i < indent; i++) {
+								outputStream.write("\t");
+							}
+						}
+						outputStream.write(annote);
+						outputStream.write("\r\n");
+					}
+				}
+				if(doIndent){
+					for(int i = 0; i < indent; i++){
+						outputStream.write("\t");
+					}
+				}
+				if(v != null){
+					if(first){
+						first = false;
+					} else {
+						outputStream.write(", ");
+					}
+					if(v instanceof DaTextObject){
+						outputStream.write("\r\n");
+					}
+					v.serialize(outputStream, doIndent, indent+1);
+				}
+				outputStream.write("]\r\n");
+			}
+		} finally {
+			readLock.unlock();
+		}
+	}
+	
 }
