@@ -17,6 +17,7 @@ public class Formatter {
 	final static String[] CONTROL_CHARS = {"{","}","[","]","\n"};
 	final static String[] TEXT_CONTROL_CHARS = {"{","}","[","]","\n","'","\""};
 	final static String[] LIST_CONTROL_CHARS = {"[","]","\n",";"};
+	final static String[] QUOTED_TEXT_CONTROL_CHARS = {"\""};
 	
 	public static String unescape(String input){
 		return unescape(input,CONTROL_CHARS);
@@ -32,6 +33,9 @@ public class Formatter {
 	
 	public static String escapeText(String input){
 		return escape(input,TEXT_CONTROL_CHARS);
+	}
+	public static String escapeQuotedText(String input){
+		return escape(input,QUOTED_TEXT_CONTROL_CHARS);
 	}
 	
 	public static String unescapeList(String input){

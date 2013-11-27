@@ -150,7 +150,17 @@ public class DefaultDaTextParser extends DaTextParser{
 										state = ReadState.QUOTE;
 									} else if(c == '\''){
 										state = ReadState.SEMIQUOTE;
+									} else if(c == ';'){
+										// empty list entry
+										state = ReadState.WHITESPACE;
+										break;
 									} else {
+										if (c == '\\') {
+											c = input.readNextChar();
+											if (c == null) {
+												throw new IllegalArgumentException("DaText Format Error on line [" + line + "]: Unexpected end-of-file after escape character \\");
+											}
+										}
 										state = ReadState.VALUE;
 										valueBuffer.append(c);
 									}
