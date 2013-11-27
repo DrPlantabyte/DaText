@@ -130,7 +130,6 @@ public class DefaultObject extends DaTextObject {
 	@Override
 	public void put(String key, DaTextObject value) {
 		put(key,(DaTextVariable)value);
-		value.setParent(this);
 	}
 
 	/**
@@ -148,7 +147,7 @@ public class DefaultObject extends DaTextObject {
 		listString.append('[');
 		for(Object o : value){
 			if(!first){
-				listString.append(',');
+				listString.append(';');
 			}
 			listString.append(datext.util.Formatter.escape(o.toString(),ListHandler.LIST_CONTROL_CHARS));
 			first = false;
@@ -206,7 +205,7 @@ public class DefaultObject extends DaTextObject {
 	 */
 	@Override
 	public void put(String key, double value, String annotation) {
-		put(key,new DefaultVariable(this.formatNumber(value),annotation));
+		put(key,new DefaultVariable(datext.util.Formatter.formatNumber(value),annotation));
 	}
 
 	/**

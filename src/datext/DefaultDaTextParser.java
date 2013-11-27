@@ -15,12 +15,13 @@ import java.util.Locale;
  */
 public class DefaultDaTextParser extends DaTextParser{
 
-	
-	final Locale locale;
 			
+	public DefaultDaTextParser(){
+		// nothing 
+	}
+	
 	@Override
-	public DaTextObject parse(Reader in, Locale localFormat) throws IOException {
-		this.locale = localFormat;
+	public DaTextObject parse(Reader in) throws IOException {
 		Parser p = new Parser(in);
 		try{return p.parse();}finally{in.close();}
 	}
@@ -113,6 +114,7 @@ public class DefaultDaTextParser extends DaTextParser{
 					// for parsing nested lists, a ']' signals the end of the nested list
 					obj.put("L", list);
 					done = true;
+					c = ';';
 				}else if(c == null){
 					// pad the end of the stream with a new-line
 					done = true;
@@ -144,7 +146,14 @@ public class DefaultDaTextParser extends DaTextParser{
 							} else {
 								keynameBuffer = new StringBuilder();
 								if(nestedList){
-									state = ReadState.VALUE;
+									if(c == '"'){
+										state = ReadState.QUOTE;
+									} else if(c == '\''){
+										state = ReadState.SEMIQUOTE;
+									} else {
+										state = ReadState.VALUE;
+										valueBuffer.append(c);
+									}
 								} else {
 									state = ReadState.KEY;
 								}
@@ -198,7 +207,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							valueBuffer.append(c);
 							Parser np = new Parser(this.input);
 							np.line = line;
-							np.state = ReadState.SQUARE_BRACKET;
+						//	np.state = ReadState.SQUARE_BRACKET;
 							DaTextObject wrapper = np.parse(false, true); // recursive list parsing
 							DaTextList L = wrapper.getList("L");
 							line = np.line;
@@ -246,7 +255,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							keynameBuffer = new StringBuilder();
 							valueBuffer = new StringBuilder();
 							break;
-						} else if(nestedList && c == ','){
+						} else if(nestedList && c == ';'){
 							// check for empty value (do not store empties)
 							if (valueBuffer.toString().trim().length() <= 0){
 								// empty list item, continue without adding a list entry
@@ -301,7 +310,7 @@ public class DefaultDaTextParser extends DaTextParser{
 							}
 						} else if(c == ']'){
 							state = ReadState.VALUE;
-						} else if(c == ','){
+						} else if(c == ';'){
 							// 
 						}
 						valueBuffer.append(c);

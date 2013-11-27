@@ -4,7 +4,6 @@
  */
 package datext;
 
-import java.util.List;
 import datext.util.*;
 
 /**
@@ -67,7 +66,7 @@ public class DefaultVariable extends DaTextVariable{
 	public double asNumber() throws UnsupportedOperationException, NumberFormatException {
 		readLock.lock();
 		try{
-			return datext.util.Localizer.parseLocalizedNumber(value, this.getLocale());
+			return datext.util.Formatter.parseLocalizedNumber(value);
 		} finally {
 			readLock.unlock();
 		}

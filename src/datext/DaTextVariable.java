@@ -7,7 +7,6 @@ package datext;
 import datext.util.Formatter;
 import java.text.NumberFormat;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -106,6 +105,8 @@ public abstract class DaTextVariable {
 	 * @return The value stored in this variable.
 	 */
 	public abstract String asText();
+	
+	
 	/**
 	 * Gets the value of this variable as an integer
 	 * @return The value stored in this variable.
@@ -224,38 +225,8 @@ public abstract class DaTextVariable {
 		
 		throw new UnsupportedOperationException("Not Done Yet");
 	}
-	/**
-	 * This method provides a thread-safe localized number parser for the 
-	 * locale of this DatextVariable.
-	 * @param number A string to be parsed as a number in the set locale
-	 * @return The numerical value of the provided String.
-	 * @throws NumberFormatException Thrown if the format is not compatible with 
-	 * the local (e.g. parsing the String <code>"1,250,010.25"</code> when the locale is set 
-	 * to <code>Locale.FRANCE</code>)
-	 */
-	public Number parseNumber(String number, Locale locale) throws NumberFormatException{
-		NumberFormat nf = NumberFormat.getNumberInstance(locale);
-		try{
-			
-			return nf.parse(number);
-		}catch(java.text.ParseException ex){
-			NumberFormatException nfe = new NumberFormatException("Could not parse the number "+number
-					+ " in the " + locale + " locale.");
-			nfe.initCause(ex);
-			throw nfe;
-		}
-	}
-	/**
-	 * This method provides a thread-safe localized number formatter for the 
-	 * locale of this DatextVariable.
-	 * @param number A number to convert to a localized String
-	 * @return The String representation of the number, as per the locale set 
-	 * for this DaTextVariable
-	 */
-	public String formatNumber(double number, Locale locale){
-		NumberFormat nf = NumberFormat.getNumberInstance(locale);
-		return nf.format(number);
-	}
+	
+	
 	
 	/**
 	 * Writes the value of this variable as a string to the given 

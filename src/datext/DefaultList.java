@@ -5,6 +5,7 @@
 package datext;
 
 import datext.util.BinaryConverter;
+import datext.util.Formatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -267,7 +268,7 @@ public class DefaultList extends DaTextList{
 
 	@Override
 	public void add(double value, String annotation) {
-		this.add(new DefaultVariable(formatNumber(value),annotation));
+		this.add(new DefaultVariable(Formatter.formatNumber(value),annotation));
 	}
 
 	@Override

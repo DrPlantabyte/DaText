@@ -126,6 +126,8 @@ public class TestMain {
 			parsed2.serialize(w2, true, 0);
 			secondSerial = w2.toString();
 			result = firstSerial.equals(secondSerial);
+			System.out.println("\nresult of 2nd parsing:");
+			parsed2.serialize(System.out, true, 0);
 		}catch(IOException ex){
 			ex.printStackTrace(System.err);
 			result = false;

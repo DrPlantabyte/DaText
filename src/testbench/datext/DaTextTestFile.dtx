@@ -37,19 +37,20 @@ text3 = 'Doug said "Lisa\'s teacher told me not to use / or \\ in filenames."'
    key with spaces in name =     herp a derp
 
 // You can (try to) parse any key as any value type. The following are demonstrations 
-// of how that should work (not that decimal parsings could be locale sensitive)
-# storing the Locale is a good way to keep number parsing consistent
-locale=en-US
+// of how that should work
+
 # a base-10 integer
 type is int10 = 12500
 # a base-10 integer
-type is int10 2 = 12,500 // note that use of , is locale specific
-# a base-10 integer
-type is int10 3 = 12 500
+type is int10 2 = 12 500
 # a base-16 integer
 type is hex = 0xEF1490
-# a decimal
-type is float = 12.345 // locale sensitive
+# a decimal, note that either . or , can mark the decimal place
+type is float 1 = 12.345
+# a decimal, note that either . or , can mark the decimal place
+type is float 2 = 12,345
+# you should use a whitespace as the thousands mark
+type is float 3 = 12 345.67
 # a decimal in sci notation
 type is scifloat = 1.2345E+1 // locale sensitive
 # a byte array (internal whitespace is ignored, but helps with human readability)
@@ -62,22 +63,22 @@ type is text 2 = "It is probably better to use quotes for multiline text.
 See?
 So much better!"
 
-# element type is a DaText tree
-element1={
-	# a element inside an element
-	element2={
+# object type is a DaText tree
+object1={
+	# a object inside an object
+	object2={
 		text1=heyyyy
 		text2=derp
 		number=5
 	}
-	# lists are comma separated text values. intentional commas can be escaped or quoted
-	list of names=[Bob, Bobby, Bobilina, 
-		Bodacious, "Bob, slayer of bunnies", 
-		Herp\, the derper,] // trailing comma should not cause errors, empty values not added to list
+	# lists are semi-colon separated text values. intentional commas can be escaped or quoted
+	list of names=[Bob; Bobby; Bobilina; 
+		Bodacious; "Bob, slayer of bunnies; just ignore him"; 
+		Herp\; the derper;;;;;;] // trailing semicolon should not cause errors, empty values not added to list
 }
  
 /*
-That's all the DaText types (int, hex int, decimal, byte array, text, elements, and lists.
+That's all the DaText types (int, hex int, decimal, byte array, text, objects, and lists.
 No more will be added to the spec for two reasons:
 	1. Adding any more will make DaText more complicated and difficult to read 
 and implement (defeating the purpose of DaText)

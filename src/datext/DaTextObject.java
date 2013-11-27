@@ -4,10 +4,8 @@
  */
 package datext;
 
-import datext.util.Formatter;
 import java.util.Collection;
 import java.util.List;
-import java.util.Locale;
 
 /**
  *
@@ -18,77 +16,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	
 	// TODO: update documentation
 
-	/** Points to the DaText above this one. If this is the root object, 
-	 * then this will be null. */
-	private DaTextObject parent = null;
 	
-	
-	/**
-	 * Sets the locale used by this object and all child 
-	 * objects for parsing numbers.
-	 * <p/>This method is thread-safe.
-	 * @param newLocale The new locale to use.
-	 */
-	@Override public void setLocale(java.util.Locale newLocale){
-		// TODO: this method
-		writeLock.lock();
-		try{
-			super.setLocale(newLocale);
-			for(DaTextVariable child : this.getAllVariables()){
-				child.setLocale(newLocale);
-			}
-		}finally {
-			writeLock.unlock();
-		}
-	}
-	
-	
-	/**
-	 * Gets the root (aka Document) object that this object belongs to.
-	 * <p/>This method is thread-safe.
-	 * @return The top of the DaText tree, or this object if it is the root.
-	 */
-	public DaTextObject getRoot(){
-		readLock.lock();
-		try{
-			DaTextObject root = this;
-			while(root.getParent() != null){
-				root = root.getParent();
-			}
-			return root;
-		}finally {
-			readLock.unlock();
-		}
-	}
-	/** 
-	 * Gets the object that owns this object.
-	 * <p/>This method is thread-safe.
-	 * @return The object above this one, or null if this object is the root.
-	 */
-	public DaTextObject getParent(){
-		readLock.lock();
-		try{
-			return parent;
-		}finally {
-			readLock.unlock();
-		}
-	}
-	
-	/**
-	 * Sets the owning object. This method alone is not sufficient to transfer 
-	 * an object from one owner to another. Setting the parent to 
-	 * <code>null</code> will make it behave as a root object
-	 * <p/>This method is thread-safe.
-	 * @param newParent New owning object
-	 */
-	protected void setParent(DaTextObject newParent){
-		writeLock.lock();
-		try{
-			parent = newParent;
-		}finally {
-			writeLock.unlock();
-		}
-	}
 	/**
 	 * Examines all of the member variables and returns a list of only those 
 	 * that are DaText objects.
@@ -1174,13 +1102,17 @@ public abstract class DaTextObject extends DaTextVariable{
 				if (v != null) {
 					String annote = v.getAnnotation();
 					if (annote != null) {
-						if (doIndent) {
-							for (int i = 0; i < indent; i++) {
-								outputStream.write("\t");
+						String[] annoteLines = annote.split("\n");
+						for (String a : annoteLines) {
+							if (doIndent) {
+								for (int i = 0; i < indent; i++) {
+									outputStream.write("\t");
+								}
 							}
+							outputStream.write("# ");
+							outputStream.write(a.trim());
+							outputStream.write("\r\n");
 						}
-						outputStream.write(annote);
-						outputStream.write("\r\n");
 					}
 				}
 				if(doIndent){
@@ -1194,9 +1126,10 @@ public abstract class DaTextObject extends DaTextVariable{
 					v.serialize(outputStream, doIndent, indent+1);
 					
 				}
-				if (indent > 0) { // no brackets for root object
-					outputStream.write("}\r\n");
-				}
+				outputStream.write("\r\n");
+			}
+			if (indent > 0) { // no brackets for root object
+				outputStream.write("}\r\n");
 			}
 		} finally {
 			readLock.unlock();

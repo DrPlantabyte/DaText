@@ -215,35 +215,35 @@ public abstract class DaTextList extends DaTextVariable implements java.util.Lis
 			boolean first = true;
 			for(DaTextVariable v : this){
 				if (v != null) {
-					String annote = v.getAnnotation();
-					if (annote != null) {
-						if (doIndent) {
-							for (int i = 0; i < indent; i++) {
-								outputStream.write("\t");
-							}
-						}
-						outputStream.write(annote);
-						outputStream.write("\r\n");
-					}
-				}
-				if(doIndent){
-					for(int i = 0; i < indent; i++){
-						outputStream.write("\t");
-					}
-				}
-				if(v != null){
 					if(first){
 						first = false;
 					} else {
-						outputStream.write(", ");
+						outputStream.write("; ");
 					}
+					String annote = v.getAnnotation();
+					if (annote != null) {
+						outputStream.write("\r\n");
+						String[] annoteLines = annote.split("\n");
+						for (String a : annoteLines) {
+							if (doIndent) {
+								for (int i = 0; i < indent; i++) {
+									outputStream.write("\t");
+								}
+							}
+							outputStream.write("# ");
+							outputStream.write(a.trim());
+							outputStream.write("\r\n");
+						}
+					}
+				}
+				if(v != null){
 					if(v instanceof DaTextObject){
 						outputStream.write("\r\n");
 					}
 					outputStream.write(Formatter.escapeList(v.asText()));
 				}
-				outputStream.write("]\r\n");
 			}
+			outputStream.write("]\r\n");
 		} finally {
 			readLock.unlock();
 		}
