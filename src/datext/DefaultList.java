@@ -23,7 +23,9 @@ public class DefaultList extends DaTextList{
 	 * java.util.List implementation methods.*/
 	protected ArrayList<DaTextVariable> listData = new ArrayList<>();
 	
-	
+	public DefaultList(){
+		// do nothing
+	}
 	
 	///// LIST METHODS /////
 	// <editor-fold defaultstate="collapsed" desc="Implementation of java.util.List">
@@ -283,8 +285,9 @@ public class DefaultList extends DaTextList{
 
 	@Override
 	public String asText() {
-		// TODO: serialize
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		java.io.StringWriter w = new java.io.StringWriter();
+		try{this.serialize(w, true, 0);}catch(java.io.IOException ex){}
+		return w.toString();
 	}
 
 	
@@ -302,6 +305,16 @@ public class DefaultList extends DaTextList{
 
 	@Override
 	public DaTextVariable clone() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		readLock.lock();
+		try{	
+			DefaultList clone = new DefaultList();
+			clone.setAnnotation(this.getAnnotation());
+			for(DaTextVariable v : this){
+				clone.listData.add(v);
+			}
+			return clone;
+		} finally {
+			readLock.unlock();
+		}
 	}
 }

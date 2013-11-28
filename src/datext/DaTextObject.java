@@ -1256,7 +1256,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	@Deprecated
 	@Override
 	public void set(byte[] value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextObject.class.getSimpleName()); 
 	}
 
 	/**

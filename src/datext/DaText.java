@@ -7,13 +7,14 @@ package datext;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 // TODO: update the documentation, 
 // TODO: add high-performance alternative implementations, 
 // TODO: add methods to the DaText helper to create useful instances of DaText objects
+// TODO: JSON interoperability
 
 /**
+ * 
  * This utility class provides static methods for reading, writing, and 
  * creating DaText data.
  * @author Christopher Collin Hall

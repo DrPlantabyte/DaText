@@ -5,11 +5,6 @@
 package datext;
 
 import datext.util.Formatter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 
 /**
  *
@@ -181,7 +176,7 @@ public abstract class DaTextList extends DaTextVariable implements java.util.Lis
 	@Deprecated
 	@Override
 	public void set(byte[] value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Cannot change value of "+DaTextList.class.getSimpleName()); 
 	}
 
 	

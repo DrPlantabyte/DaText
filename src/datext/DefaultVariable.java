@@ -84,48 +84,62 @@ public class DefaultVariable extends DaTextVariable{
 
 	@Override
 	public DaTextList asList() throws UnsupportedOperationException {
-		// TODO: parse text as list
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Cannot change type of "
+				+this.getClass().getSimpleName() + " to " + DaTextList.class.getSimpleName()); 
 	}
 
 	@Override
 	public void set(String value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		writeLock.lock();
+		try{
+			this.value = value;
+		} finally{
+			writeLock.unlock();
+		}
 	}
 
 	@Override
 	public void set(int value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		this.set(Integer.toString(value));
 	}
 
 	@Override
 	public void set(long value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		this.set(Long.toString(value));
 	}
 
 	@Override
 	public void set(double value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		this.set(Formatter.formatNumber(value));
 	}
 
 	@Override
 	public void set(byte[] value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		this.set(BinaryConverter.bytesToString(value));
 	}
 
 	@Override
 	public void set(DaTextList value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Cannot change type of "
+				+ value.getClass().getSimpleName() + " to " + this.getClass().getSimpleName()); 
 	}
 
 	@Override
 	public void set(DaTextObject value) {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		throw new UnsupportedOperationException("Cannot change type of "
+				+ value.getClass().getSimpleName() + " to " + this.getClass().getSimpleName());
 	}
 
 	@Override
 	public DaTextVariable clone() {
-		throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+		// Clone is supposed to be a deep copy
+		readLock.lock();
+		try{
+			DefaultVariable clone = new DefaultVariable(value,this.getAnnotation());
+			return clone;
+		} finally {
+			readLock.unlock();
+		}
 	}
 	
 	

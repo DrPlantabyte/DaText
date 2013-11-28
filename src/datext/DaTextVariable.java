@@ -19,7 +19,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
  * appropriate subtype.
  * @author Christopher Collin Hall
  */
-public abstract class DaTextVariable {
+public abstract class DaTextVariable implements Cloneable{
 	/** Lock to synchronize reading and writing */
 	protected final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 	/** All getter methods must use this lock (or their own Read/Write Lock) to be thread-safe */
