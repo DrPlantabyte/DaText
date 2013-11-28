@@ -36,9 +36,25 @@ public class RPGCharacter {
 			
 			
 			// TODO code application logic here
-			
+			final RPGCharacter program = new RPGCharacter();
+			program.init();
+			javax.swing.SwingUtilities.invokeLater(new Runnable(){public void run(){program.createAndShowGUI();}});
 		} catch (Exception ex) {
 			Logger.getLogger(RPGCharacter.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
+
+	private RPGCharacter() {
+		// do Nothing
+	}
+
+	private void init() {
+		// 
+	}
+
+	private void createAndShowGUI() {
+		// 
+	}
+	
+	
 }
