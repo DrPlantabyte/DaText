@@ -5,6 +5,7 @@
 package testbench.datext.testapps.rpgcharacter;
 
 import datext.*;
+import java.awt.BorderLayout;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,6 +23,7 @@ public class MainFrame extends javax.swing.JFrame {
 	public MainFrame() {
 		characters = new DefaultList();
 		initComponents();
+		editorPane.setLayout(new BorderLayout());
 		editorPane.add(editor);
 		updateGUI();
 	}
@@ -29,6 +31,7 @@ public class MainFrame extends javax.swing.JFrame {
 	public MainFrame(DaTextList chars) {
 		this.characters = chars;
 		initComponents();
+		editorPane.setLayout(new BorderLayout());
 		editorPane.add(editor);
 		updateGUI();
 	}

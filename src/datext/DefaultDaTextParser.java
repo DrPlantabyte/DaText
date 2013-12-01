@@ -7,7 +7,6 @@ package datext;
 import datext.io.StreamHandler;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Locale;
 
 /**
  * Uses a FSM to parse a character stream to a DaText tree.
