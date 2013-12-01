@@ -100,10 +100,10 @@ public class DefaultDaTextParser extends DaTextParser{
 			do{
 				
 				if(old != state){
-					System.out.println("\n\t"+state.name());
+			//		System.out.println("\n\t"+state.name());
 					old = state;
 				}
-				System.out.print(input.peekCurrent());
+			//	System.out.print(input.peekCurrent());
 				
 				Character c = input.readNextChar();
 				
