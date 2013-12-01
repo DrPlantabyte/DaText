@@ -49,6 +49,16 @@ public abstract class DaText {
 		}
 		return obj;
 	}
+
+	public static void writeObjectToFile(DaTextObject dtx, Path file) throws IOException{
+		writeObjectToStream(dtx,Files.newOutputStream(file),true);
+	}
+	
+	public static void writeObjectToStream(DaTextObject dtx, OutputStream out , boolean indentLines) throws IOException{
+		OutputStreamWriter w = new OutputStreamWriter(out,DEFAULT_CHARSET);
+		dtx.serialize(w, indentLines, 0);
+		w.close();
+	}
 	
 	
 	

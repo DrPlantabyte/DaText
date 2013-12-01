@@ -4,17 +4,97 @@
  */
 package testbench.datext.testapps.rpgcharacter;
 
+import com.sun.istack.internal.logging.Logger;
+import datext.DaTextList;
+import datext.DaTextObject;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import sun.util.logging.PlatformLogger;
+
 /**
  *
  * @author cybergnome
  */
 public class CharacterEditorPanel extends javax.swing.JPanel {
 
+	
+	DaTextObject NPC = null;
 	/**
 	 * Creates new form CharacterEditorPanel
 	 */
 	public CharacterEditorPanel() {
 		initComponents();
+	}
+	
+	public void load(DaTextObject characterData){
+		NPC = characterData;
+		javax.swing.SwingUtilities.invokeLater(new Runnable(){public void run(){loadFromDaText();}});
+	}
+	/** Must be invoked on the Swing event thread*/
+	private void loadFromDaText(){
+		DaTextObject character = NPC;
+		try{
+			this.nameLabel.setText(character.getOrSet("name", "No Name", "Name of the character"));
+			DaTextObject abilities = character.getOrSet("ability-scores",(String)null);
+			this.strSpinner.setValue(abilities.getOrSet("str", 10, null));
+			this.dexSpinner.setValue(abilities.getOrSet("dex", 10, null));
+			this.conSpinner.setValue(abilities.getOrSet("con", 10, null));
+			this.intSpinner.setValue(abilities.getOrSet("int", 10, null));
+			this.wisSpinner.setValue(abilities.getOrSet("wis", 10, null));
+			this.chaSpinner.setValue(abilities.getOrSet("cha", 10, null));
+			this.imagePanel.removeAll();
+			if(character.exists("image")){
+				BufferedImage img = ImageIO.read(new ByteArrayInputStream(character.getBinary("image")));
+				if(img != null){
+					JLabel l = new JLabel(new ImageIcon(img));
+					this.imagePanel.add(l);
+				}
+			}
+			
+			this.ptLabel.setText(Integer.toString(calculatePointBuyValue(
+						abilities.getInt("str"),
+						abilities.getInt("dex"),
+						abilities.getInt("con"),
+						abilities.getInt("int"),
+						abilities.getInt("wis"),
+						abilities.getInt("cha")
+					)));
+			DaTextObject levels = character.getOrSet("class-levels","Levels in each of the 6 basic classes");
+			this.strongSpinner.setValue(levels.getOrSet("Strong", 0, null));
+			this.fastSpinner.setValue(levels.getOrSet("Fast", 0, null));
+			this.toughSpinner.setValue(levels.getOrSet("Tough", 0, null));
+			this.smartSpinner.setValue(levels.getOrSet("Smart", 0, null));
+			this.dedSpinner.setValue(levels.getOrSet("Dedicated", 0, null));
+			this.charSpinner.setValue(levels.getOrSet("Charismatic", 0, null));
+			
+			updateTextExport();
+		}catch (Exception ex){
+			showException(ex);
+		}
+	}
+	
+	private void updateTextExport(){
+		// TODO: output NPC as text in the text area
+	}
+	
+	private int calculatePointBuyValue(int... scores){
+		int sum = 0;
+		DaTextList lut = RPGCharacter.getInstance().getConfiguration().getObject("data").getList("ptbuy-LUT");
+		for(int i = 0; i < scores.length; i++){
+			int score = scores[i];
+			sum += lut.getAsInt(score);
+		}
+		return sum;
+	}
+	
+	public void showException(Exception ex){
+		java.util.logging.Logger.getLogger(this.getClass().getCanonicalName()).log( java.util.logging.Level.SEVERE,"Exception "+ex.getClass().getSimpleName()+" occured in GUI",ex);
+		JOptionPane.showMessageDialog(this, ex);
 	}
 
 	/**
@@ -27,14 +107,16 @@ public class CharacterEditorPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         jScrollBar1 = new javax.swing.JScrollBar();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        tabs = new javax.swing.JTabbedPane();
+        statPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         strSpinner = new javax.swing.JSpinner();
         dexSpinner = new javax.swing.JSpinner();
         conSpinner = new javax.swing.JSpinner();
-        wisSpinner = new javax.swing.JSpinner();
         intSpinner = new javax.swing.JSpinner();
+        wisSpinner = new javax.swing.JSpinner();
         chaSpinner = new javax.swing.JSpinner();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -42,17 +124,68 @@ public class CharacterEditorPanel extends javax.swing.JPanel {
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         imagePanel = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
+        imgButton = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        charSpinner = new javax.swing.JSpinner();
+        toughSpinner = new javax.swing.JSpinner();
+        fastSpinner = new javax.swing.JSpinner();
+        strongSpinner = new javax.swing.JSpinner();
+        jLabel12 = new javax.swing.JLabel();
+        dedSpinner = new javax.swing.JSpinner();
+        smartSpinner = new javax.swing.JSpinner();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        outputTextArea = new javax.swing.JTextArea();
+        jLabel13 = new javax.swing.JLabel();
+        ptLabel = new javax.swing.JLabel();
+        nameLabel = new javax.swing.JLabel();
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane2.setViewportView(jTextArea1);
 
         jLabel1.setText("STR");
+
+        strSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 3, 18, 1));
+        strSpinner.setMaximumSize(new java.awt.Dimension(50, 32767));
+        strSpinner.setMinimumSize(new java.awt.Dimension(40, 26));
+        strSpinner.setPreferredSize(new java.awt.Dimension(50, 26));
+
+        dexSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 3, 18, 1));
+        dexSpinner.setMaximumSize(new java.awt.Dimension(50, 32767));
+        dexSpinner.setMinimumSize(new java.awt.Dimension(40, 26));
+        dexSpinner.setPreferredSize(new java.awt.Dimension(50, 26));
+
+        conSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 3, 18, 1));
+        conSpinner.setMaximumSize(new java.awt.Dimension(50, 32767));
+        conSpinner.setMinimumSize(new java.awt.Dimension(40, 26));
+        conSpinner.setPreferredSize(new java.awt.Dimension(50, 26));
+
+        intSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 3, 18, 1));
+        intSpinner.setMaximumSize(new java.awt.Dimension(50, 32767));
+        intSpinner.setMinimumSize(new java.awt.Dimension(40, 26));
+        intSpinner.setPreferredSize(new java.awt.Dimension(50, 26));
+
+        wisSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 3, 18, 1));
+        wisSpinner.setMaximumSize(new java.awt.Dimension(50, 32767));
+        wisSpinner.setMinimumSize(new java.awt.Dimension(40, 26));
+        wisSpinner.setPreferredSize(new java.awt.Dimension(50, 26));
+
+        chaSpinner.setModel(new javax.swing.SpinnerNumberModel(10, 3, 18, 1));
+        chaSpinner.setMaximumSize(new java.awt.Dimension(50, 32767));
+        chaSpinner.setMinimumSize(new java.awt.Dimension(40, 26));
+        chaSpinner.setPreferredSize(new java.awt.Dimension(50, 26));
 
         jLabel2.setText("DEX");
 
         jLabel3.setText("CON");
 
-        jLabel4.setText("WIS");
+        jLabel4.setText("INT");
 
-        jLabel5.setText("INT");
+        jLabel5.setText("WIS");
 
         jLabel6.setText("CHA");
 
@@ -68,124 +201,231 @@ public class CharacterEditorPanel extends javax.swing.JPanel {
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 130, Short.MAX_VALUE)
         );
 
-        jButton1.setText("jButton1");
+        imgButton.setText("Choose Image");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(8, 8, 8)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+        jLabel7.setText("Charismatic Hero");
+
+        jLabel8.setText("Smart Hero");
+
+        jLabel9.setText("Dedicated Hero");
+
+        jLabel10.setText("Fast Hero");
+
+        jLabel11.setText("Tough Hero");
+
+        charSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+
+        toughSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+
+        fastSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+
+        strongSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+
+        jLabel12.setText("Strong Hero");
+
+        dedSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+
+        smartSpinner.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+
+        outputTextArea.setEditable(false);
+        outputTextArea.setColumns(20);
+        outputTextArea.setLineWrap(true);
+        outputTextArea.setRows(5);
+        outputTextArea.setWrapStyleWord(true);
+        jScrollPane1.setViewportView(outputTextArea);
+
+        jLabel13.setText("Point Value:");
+
+        ptLabel.setText("##");
+
+        nameLabel.setText("jLabel14");
+
+        javax.swing.GroupLayout statPanelLayout = new javax.swing.GroupLayout(statPanel);
+        statPanel.setLayout(statPanelLayout);
+        statPanelLayout.setHorizontalGroup(
+            statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statPanelLayout.createSequentialGroup()
+                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nameLabel)
+                    .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(statPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(imgButton)))
+                .addGap(12, 12, 12)
+                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(statPanelLayout.createSequentialGroup()
                         .addGap(1, 1, 1)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(3, 3, 3)
+                        .addComponent(jLabel13)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ptLabel))
+                    .addGroup(statPanelLayout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(statPanelLayout.createSequentialGroup()
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel6, javax.swing.GroupLayout.Alignment.TRAILING))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(wisSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                    .addComponent(chaSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(statPanelLayout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(conSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(statPanelLayout.createSequentialGroup()
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(statPanelLayout.createSequentialGroup()
+                                        .addComponent(jLabel1)
+                                        .addGap(14, 14, 14))
+                                    .addGroup(statPanelLayout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(dexSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE)
+                                    .addComponent(strSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(statPanelLayout.createSequentialGroup()
                                 .addComponent(jLabel4)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(wisSpinner))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel6)
+                                .addComponent(intSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(25, 57, Short.MAX_VALUE)
+                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel12, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel11, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(charSpinner)
+                    .addComponent(dedSpinner)
+                    .addComponent(smartSpinner, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(toughSpinner, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(fastSpinner)
+                    .addComponent(strongSpinner, javax.swing.GroupLayout.Alignment.TRAILING)))
+            .addComponent(jScrollPane1)
+        );
+        statPanelLayout.setVerticalGroup(
+            statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(statPanelLayout.createSequentialGroup()
+                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(statPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(statPanelLayout.createSequentialGroup()
+                                .addGap(32, 32, 32)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(dexSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(conSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(intSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel4))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(wisSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(intSpinner)
-                                    .addComponent(chaSpinner)))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(chaSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel6)))
+                            .addGroup(statPanelLayout.createSequentialGroup()
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(strongSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel12)
+                                    .addComponent(jLabel1)
+                                    .addComponent(strSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(fastSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel10))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(toughSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel11))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(smartSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(dedSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel9))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(charSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel7))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(conSpinner))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING))
-                        .addGap(14, 14, 14)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(dexSpinner, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE)
-                            .addComponent(strSpinner))))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(284, 284, 284)
-                        .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(statPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel13)
+                            .addComponent(ptLabel)))
+                    .addGroup(statPanelLayout.createSequentialGroup()
+                        .addComponent(nameLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)
-                        .addGap(20, 20, 20))))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(strSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(dexSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(conSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(wisSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)))
-                    .addComponent(imagePanel, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(intSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(chaSpinner, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton1)))
-                .addContainerGap(215, Short.MAX_VALUE))
+                        .addComponent(imgButton)))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))
         );
 
-        jTabbedPane1.addTab("tab1", jPanel1);
+        tabs.addTab("Stats", statPanel);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(tabs)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1)
+            .addComponent(tabs)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JSpinner chaSpinner;
+    private javax.swing.JSpinner charSpinner;
     private javax.swing.JSpinner conSpinner;
+    private javax.swing.JSpinner dedSpinner;
     private javax.swing.JSpinner dexSpinner;
+    private javax.swing.JSpinner fastSpinner;
     private javax.swing.JPanel imagePanel;
+    private javax.swing.JButton imgButton;
     private javax.swing.JSpinner intSpinner;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollBar jScrollBar1;
-    private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JLabel nameLabel;
+    private javax.swing.JTextArea outputTextArea;
+    private javax.swing.JLabel ptLabel;
+    private javax.swing.JSpinner smartSpinner;
+    private javax.swing.JPanel statPanel;
     private javax.swing.JSpinner strSpinner;
+    private javax.swing.JSpinner strongSpinner;
+    private javax.swing.JTabbedPane tabs;
+    private javax.swing.JSpinner toughSpinner;
     private javax.swing.JSpinner wisSpinner;
     // End of variables declaration//GEN-END:variables
 }

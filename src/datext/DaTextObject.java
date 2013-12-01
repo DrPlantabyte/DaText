@@ -70,6 +70,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	public DaTextObject getObject(String key) throws UnsupportedOperationException{
 		readLock.lock();try{return this.get(key).asObject();}finally{readLock.unlock();}
 	}
+	
 	/**
 	 * Gets a field by the given field name, if it exists, 
 	 * and treats it as a list. 
@@ -336,23 +337,13 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * System.out.println("Title: " + title);<br/>
 	 * </code>
 	 * @param key Variable name that identifies the variable being referenced.
+	 * @param annotation The annotation for this variable, may be null.
 	 * @return Returns the object, if it exists, or the newly created 
 	 * one (with default value) it it didn't exist.
 	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
 	 * and is not an object type.
 	 */
-	public DaTextObject getOrSet(String key) throws UnsupportedOperationException{
-		writeLock.lock();
-		try {
-			if (exists(key)) {
-				return get(key).asObject();
-			}
-			put(key);
-			return get(key).asObject();
-		} finally {
-			writeLock.unlock();
-		}
-	}
+	public abstract DaTextObject getOrSet(String key,String annotation) throws UnsupportedOperationException;
 	/**
 	 * Gets the child object by the given variable name, if it exists, 
 	 * or adds a new object if it doesn't already exist. 
@@ -435,7 +426,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
 	 * but is not the correct type.
 	 */
-	public List<DaTextVariable> getOrSet(String key, List<DaTextVariable> defaultValue, String annotation) throws UnsupportedOperationException{
+	public DaTextList getOrSet(String key, List<DaTextVariable> defaultValue, String annotation) throws UnsupportedOperationException{
 		writeLock.lock();
 		try {
 			if(exists(key)){
@@ -692,233 +683,8 @@ public abstract class DaTextObject extends DaTextVariable{
 			writeLock.unlock();
 		}
 	}
-	/**
-	 * Gets a field by the given field name, if it exists, 
-	 * or adds a new one if it doesn't already exist. 
-	 * <p/>
-	 * Example:<br/>
-	 * <i>ex.dtx:</i><br/>
-	 * <tt>
-	 * numJellyBeans=273<br/>
-	 * weight=158.052<br/>
-	 * availableColors=[red,blue,yellow,green]<br/>
-	 * # Properties of this batch of jelly beans <br/>
-	 * properties={<br/>
-	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
-	 * &nbsp;&nbsp;    texture=shiny<br/>
-	 * &nbsp;&nbsp;    flavor=fruity<br/>
-	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
-	 * }<br/>
-	 * </tt>
-	 * <br/>
-	 * <i>java code:</i><br/>
-	 * <code>
-	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
-	 * <b>List&lt;String&gt; reviews = docRoot.getOrSet("label").getOrSet("reviews", defaultReviews);</b><br/>
-	 * for(String s : reviews){<br/>
-	 * &nbsp;&nbsp;System.out.println(s + "!");<br/>
-	 * }<br/>
-	 * </code>
-	 * @param key Variable name that identifies the variable being referenced.
-	 * @param defaultValue The value to initialize the field to if is doesn't 
-	 * already exist (ignored if it does already exist).
-	 * @return Returns the referenced field, if it exists, or the newly created 
-	 * one (with the provided default value) it it didn't exist.
-	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
-	 * but is not the correct type.
-	 */
-	public List<DaTextVariable> getOrSet(String key, List<DaTextVariable> defaultValue) throws UnsupportedOperationException{
-		return getOrSet(key,defaultValue,null);
-	}
-	/**
-	 * Gets a field by the given field name, if it exists, 
-	 * or adds a new one if it doesn't already exist. 
-	 * <p/>
-	 * Example:<br/>
-	 * <i>ex.dtx:</i><br/>
-	 * <tt>
-	 * numJellyBeans=273<br/>
-	 * weight=158.052<br/>
-	 * availableColors=[red,blue,yellow,green]<br/>
-	 * # Properties of this batch of jelly beans <br/>
-	 * properties={<br/>
-	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
-	 * &nbsp;&nbsp;    texture=shiny<br/>
-	 * &nbsp;&nbsp;    flavor=fruity<br/>
-	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
-	 * }<br/>
-	 * </tt>
-	 * <br/>
-	 * <i>java code:</i><br/>
-	 * <code>
-	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
-	 * <b>String title = docRoot.getOrSet("label").getOrSet("title", "Magical Beans");</b><br/>
-	 * System.out.println("Title: " + title);<br/>
-	 * </code>
-	 * @param key Variable name that identifies the variable being referenced.
-	 * @param defaultValue The value to initialize the field to if is doesn't 
-	 * already exist (ignored if it does already exist).
-	 * @return Returns the referenced field, if it exists, or the newly created 
-	 * one (with the provided default value) it it didn't exist.
-	 * @throws UnsupportedOperationException Thrown if the indicated variable exists 
-	 * but is not the correct type.
-	 */
-	public String getOrSet(String key, String defaultValue) throws UnsupportedOperationException{
-		return getOrSet(key,defaultValue,null);
-	}
-	/**
-	 * Gets a field by the given field name, if it exists, 
-	 * or adds a new one if it doesn't already exist. 
-	 * <p/>
-	 * Example:<br/>
-	 * <i>ex.dtx:</i><br/>
-	 * <tt>
-	 * numJellyBeans=273<br/>
-	 * weight=158.052<br/>
-	 * availableColors=[red,blue,yellow,green]<br/>
-	 * # Properties of this batch of jelly beans <br/>
-	 * properties={<br/>
-	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
-	 * &nbsp;&nbsp;    texture=shiny<br/>
-	 * &nbsp;&nbsp;    flavor=fruity<br/>
-	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
-	 * }<br/>
-	 * </tt>
-	 * <br/>
-	 * <i>java code:</i><br/>
-	 * <code>
-	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
-	 * <b>int revision = docRoot.getOrSet("label").getOrSet("version", 1);</b><br/>
-	 * System.out.println("Revision " + revision);<br/>
-	 * </code>
-	 * @param key Variable name that identifies the variable being referenced.
-	 * @param defaultValue The value to initialize the field to if is doesn't 
-	 * already exist (ignored if it does already exist).
-	 * @return Returns the referenced field, if it exists, or the newly created 
-	 * one (with the provided default value) it it didn't exist.
-	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
-	 * but is not the correct type.
-	 * @throws NumberFormatException Thrown if the indicated field exists 
-	 * but is not correctly formatted.
-	 */
-	public  int getOrSet(String key, int defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		return getOrSet(key,defaultValue,null);
-	}
-	/**
-	 * Gets a field by the given field name, if it exists, 
-	 * or adds a new one if it doesn't already exist. 
-	 * <p/>
-	 * Example:<br/>
-	 * <i>ex.dtx:</i><br/>
-	 * <tt>
-	 * numJellyBeans=273<br/>
-	 * weight=158.052<br/>
-	 * availableColors=[red,blue,yellow,green]<br/>
-	 * # Properties of this batch of jelly beans <br/>
-	 * properties={<br/>
-	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
-	 * &nbsp;&nbsp;    texture=shiny<br/>
-	 * &nbsp;&nbsp;    flavor=fruity<br/>
-	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
-	 * }<br/>
-	 * </tt>
-	 * <br/>
-	 * <i>java code:</i><br/>
-	 * <code>
-	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
-	 * <b>long time = docRoot.getOrSet("label").getOrSet("timestamp", System.currentTimeMillis());</b><br/>
-	 * System.out.println("Last edited on " + (new Date(time)).toString());<br/>
-	 * </code>
-	 * @param key Variable name that identifies the variable being referenced.
-	 * @param defaultValue The value to initialize the field to if is doesn't 
-	 * already exist (ignored if it does already exist).
-	 * @return Returns the referenced field, if it exists, or the newly created 
-	 * one (with the provided default value) it it didn't exist.
-	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
-	 * but is not the correct type.
-	 * @throws NumberFormatException Thrown if the indicated field exists 
-	 * but is not correctly formatted.
-	 */
-	public long getOrSet(String key, long defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		return getOrSet(key,defaultValue,null);
-	}
-	/**
-	 * Gets a field by the given field name, if it exists, 
-	 * or adds a new one if it doesn't already exist. 
-	 * <p/>
-	 * Example:<br/>
-	 * <i>ex.dtx:</i><br/>
-	 * <tt>
-	 * numJellyBeans=273<br/>
-	 * weight=158.052<br/>
-	 * availableColors=[red,blue,yellow,green]<br/>
-	 * # Properties of this batch of jelly beans <br/>
-	 * properties={<br/>
-	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
-	 * &nbsp;&nbsp;    texture=shiny<br/>
-	 * &nbsp;&nbsp;    flavor=fruity<br/>
-	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
-	 * }<br/>
-	 * </tt>
-	 * <br/>
-	 * <i>java code:</i><br/>
-	 * <code>
-	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
-	 * <b>Double aspect = docRoot.getOrSet("label").getOrSet("aspect ratio", 1.5);</b><br/>
-	 * System.out.println("Aspect ratio =  " + aspect);<br/>
-	 * </code>
-	 * @param key Variable name that identifies the variable being referenced.
-	 * @param defaultValue The value to initialize the field to if is doesn't 
-	 * already exist (ignored if it does already exist).
-	 * @return Returns the referenced field, if it exists, or the newly created 
-	 * one (with the provided default value) it it didn't exist.
-	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
-	 * but is not the correct type.
-	 * @throws NumberFormatException Thrown if the indicated field exists 
-	 * but is not correctly formatted.
-	 */
-	public double getOrSet(String key, double defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		return getOrSet(key,defaultValue,null);
-	}
-	/**
-	 * Gets a field by the given field name, if it exists, 
-	 * or adds a new one if it doesn't already exist. 
-	 * <p/>
-	 * Example:<br/>
-	 * <i>ex.dtx:</i><br/>
-	 * <tt>
-	 * numJellyBeans=273<br/>
-	 * weight=158.052<br/>
-	 * availableColors=[red,blue,yellow,green]<br/>
-	 * # Properties of this batch of jelly beans <br/>
-	 * properties={<br/>
-	 * &nbsp;&nbsp;    lotNumber=29474936<br/>
-	 * &nbsp;&nbsp;    texture=shiny<br/>
-	 * &nbsp;&nbsp;    flavor=fruity<br/>
-	 * &nbsp;&nbsp;    metadata=10 1F BE A2 50 00 22 3A FF<br/>
-	 * }<br/>
-	 * </tt>
-	 * <br/>
-	 * <i>java code:</i><br/>
-	 * <code>
-	 * DaTextObject docRoot = DaTextParser.parse(new File("ex.dtx"));<br/>
-	 * ByteArrayOutputStream stream = new ByteArrayOutputStream();<br/>
-	 * ImageIO.write(newLabelImg, "png", stream);<br/>
-	 * <b>byte[] imageStream = docRoot.getOrSet("label").getOrSet("icon", stream.toByteArray());</b><br/>
-	 * </code>
-	 * @param key Variable name that identifies the variable being referenced.
-	 * @param defaultValue The value to initialize the field to if is doesn't 
-	 * already exist (ignored if it does already exist).
-	 * @return Returns the referenced field, if it exists, or the newly created 
-	 * one (with the provided default value) it it didn't exist.
-	 * @throws UnsupportedOperationException Thrown if the indicated field exists 
-	 * but is not the correct type.
-	 * @throws NumberFormatException Thrown if the indicated field exists 
-	 * but is not correctly formatted.
-	 */
-	public byte[] getOrSet(String key, byte[] defaultValue) throws UnsupportedOperationException, NumberFormatException{
-		return getOrSet(key,defaultValue,null);
-	}
+	
+	
 	/**
 	 * Adds a new child object to this object, overwriting any 
 	 * pre-existing field or object with the same name.
@@ -957,7 +723,7 @@ public abstract class DaTextObject extends DaTextVariable{
 	 * @param value Value to store
 	 * @param annotation Annotation that describes this variable. May be null.
 	 */
-	public abstract void put(String key, List value, String annotation);
+	public abstract void put(String key, List<DaTextVariable> value, String annotation);
 	/**
 	 * Stores a value in this object, overwriting any previous object 
 	 * or value that may have previously been stored under the same 
@@ -1129,6 +895,11 @@ public abstract class DaTextObject extends DaTextVariable{
 				outputStream.write("\r\n");
 			}
 			if (indent > 0) { // no brackets for root object
+				if (doIndent) {
+					for (int i = 1; i < indent; i++) {
+						outputStream.write("\t");
+					}
+				}
 				outputStream.write("}\r\n");
 			}
 		} finally {

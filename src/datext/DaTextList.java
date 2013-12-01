@@ -234,8 +234,15 @@ public abstract class DaTextList extends DaTextVariable implements java.util.Lis
 				if(v != null){
 					if(v instanceof DaTextObject){
 						outputStream.write("\r\n");
+						if (doIndent) {
+							for (int i = 0; i < indent; i++) {
+								outputStream.write("\t");
+							}
+						}
+						v.serialize(outputStream, doIndent, indent+1);
+					} else {
+						outputStream.write(Formatter.escapeList(v.asText()));
 					}
-					outputStream.write(Formatter.escapeList(v.asText()));
 				}
 			}
 			outputStream.write("]\r\n");

@@ -268,4 +268,19 @@ public class DefaultObject extends DaTextObject {
 			readLock.unlock();
 		}
 	}
+	// TODO: doc
+	@Override public DaTextObject getOrSet(String key, String annotation) throws UnsupportedOperationException{
+		writeLock.lock();
+		try {
+			if (exists(key)) {
+				return get(key).asObject();
+			}
+			DaTextObject o = new DefaultObject();
+			o.setAnnotation(annotation);
+			put(key,o);
+			return o;
+		} finally {
+			writeLock.unlock();
+		}
+	}
 }

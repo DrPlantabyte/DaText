@@ -1,0 +1,114 @@
+.meta={
+info="This is the config file for the RPGCharacter app, which is designed to 
+facilitate the creation of NPCs for D20 Modern/RPGObjects Modern."
+}
+
+#saved characters
+characters=[]
+
+#info about ability scores and other class-independant properties
+data={
+	# look-up table. Index = ability score value, result = point-buy value
+	ptbuy-LUT=[-3;-3;-3;-2;-2;-1;-1;0;0;1;2;3;4;5;6;8;10;13;16]
+	# look-up table of feats by character level. index=level, max-level is 20
+	feats=[1;2;2;3;3;3;4;4;4;5;5;5;6;6;6;7;7;7;8;8;8]
+}
+
+
+classes={
+	# in all arrays, index = level
+	strong={
+		hp-per-level=4.5
+		attack-bonus=[0;1;2;3;4;5;6;7;8;9;10]
+		fort-save=   [0;1;2;2;2;3;3;4;4;4;5]
+		ref-save=    [0;0;0;1;1;1;2;2;2;3;3;]
+		will-save=   [0;0;0;1;1;1;2;2;2;3;3;]
+		defense=     [0;1;2;2;3;3;3;4;4;5;5;]
+		reputation=  [0;0;0;0;0;1;1;1;1;2;2]
+	}
+}
+# Each feat package is an array of objects, each with a feat and a special 
+# ability. Index 0 is feat #1
+feat-packages={
+	gun-slinger=[
+		{
+			feat="Personal Firearms Proficiency"
+		};
+		{
+			feat="Armor Proficiency (Light)"
+		};
+		{
+			feat="Point Blank Shot"
+			special="+1 to ranged attack rolls against targets within 30'"
+		};
+		{
+			feat="Dodge"
+			special="+1 to defense against designated enemy."
+		};
+		{
+			feat="Double Tap"
+			special="Fire 2 shots as a single attack with -2 penalty, +1 die damage on hit"
+		};
+		{
+			feat="Precise Shot"
+			special="No penalty for shooting at characters in melee"
+		};
+		{
+			feat="Mobility"
+			special="+4 to defense against opportunity attacks provoked by moving out of a threatened space."
+		};
+		{
+			feat="Shot on the Run"
+			special="May make a standard ranged attack while moving"
+		};
+		{
+			feat="Toughness"
+			special="+3 HP"
+		};
+	]
+	soldier=[
+		{
+			feat="Armor Proficiency (Light)"
+		};
+		{
+			feat="Personal Firearms Proficiency"
+		};
+		{
+			feat="Armor Proficiency (Medium)"
+		};
+		{
+			feat="Advanced Firearms Proficiency"
+			special="Autofire attack (requires automatic rate-of-fire): spend 10 bullets and target a 10'x10' area. All creatures in area must make a DC 15 Reflex save or take weapon's attack damage."
+		};
+		{
+			feat="Armor Proficiency (Heavy)"
+		};
+		{
+			feat="Burst Fire"
+			special="Fire 5 shots as a single attack with -4 penalty, +2 dice damage on hit"
+		};
+		{
+			feat="Toughness"
+			special="+3 HP"
+		};
+		{
+			feat="Far Shot"
+			special="Thrown weapons have doubled range increment, other ranged attacks have 50% greater range"
+		};
+		{
+			feat="Toughness"
+			special="+3 HP"
+		};
+	]
+	melee=[]
+	ninja=[]
+	sniper=[]
+	professional=[]
+	medical=[]
+	driver=[]
+	pilot=[]
+	investigator=[]
+	personality=[]
+	hacker=[]
+	engineer=[]
+}

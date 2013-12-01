@@ -100,10 +100,10 @@ public class DefaultDaTextParser extends DaTextParser{
 			do{
 				
 				if(old != state){
-	//				System.out.println("\n\t"+state.name());
+					System.out.println("\n\t"+state.name());
 					old = state;
 				}
-	//			System.out.print(input.peekCurrent());
+				System.out.print(input.peekCurrent());
 				
 				Character c = input.readNextChar();
 				
@@ -146,23 +146,48 @@ public class DefaultDaTextParser extends DaTextParser{
 							} else {
 								keynameBuffer = new StringBuilder();
 								if(nestedList){
-									if(c == '"'){
-										state = ReadState.QUOTE;
-									} else if(c == '\''){
-										state = ReadState.SEMIQUOTE;
-									} else if(c == ';'){
+									if(c == ';'){
 										// empty list entry
 										state = ReadState.WHITESPACE;
 										break;
-									} else {
-										if (c == '\\') {
-											c = input.readNextChar();
-											if (c == null) {
-												throw new IllegalArgumentException("DaText Format Error on line [" + line + "]: Unexpected end-of-file after escape character \\");
-											}
+									} else if (c == '{') {
+										// parse object
+										Parser np = new Parser(this.input);
+										np.line = line;
+										DaTextObject o = np.parse(true, false); // nested (recursive) parsing
+										line = np.line;
+										if (annotBuffer.length() > 0) {
+											o.setAnnotation(annotBuffer.toString().trim());
 										}
+										list.add(o);
+
+										annotBuffer = new StringBuilder();
+										keynameBuffer = new StringBuilder();
+										valueBuffer = new StringBuilder();
+										state = ReadState.WHITESPACE;
+										break;
+									} else if(c == '['){
+										// parse list
+										valueBuffer.append(c);
+										Parser np = new Parser(this.input);
+										np.line = line;
+										//	np.state = ReadState.SQUARE_BRACKET;
+										DaTextObject wrapper = np.parse(false, true); // recursive list parsing
+										DaTextList L = wrapper.getList("L");
+										line = np.line;
+										if (annotBuffer.length() > 0) {
+											L.setAnnotation(annotBuffer.toString().trim());
+										}
+										list.add(L);
+										annotBuffer = new StringBuilder();
+										keynameBuffer = new StringBuilder();
+										valueBuffer = new StringBuilder();
+										state = ReadState.WHITESPACE;
+										break;
+									} else{
 										state = ReadState.VALUE;
 										valueBuffer.append(c);
+										break;
 									}
 								} else {
 									state = ReadState.KEY;

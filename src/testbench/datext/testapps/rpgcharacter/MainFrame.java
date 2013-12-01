@@ -4,19 +4,48 @@
  */
 package testbench.datext.testapps.rpgcharacter;
 
+import datext.*;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author cybergnome
  */
 public class MainFrame extends javax.swing.JFrame {
 
+	private CharacterEditorPanel editor = new CharacterEditorPanel();
+	private final DaTextList characters;
+	private final javax.swing.DefaultListModel<String> charListModel = new javax.swing.DefaultListModel<>();
 	/**
 	 * Creates new form MainFrame
 	 */
 	public MainFrame() {
+		characters = new DefaultList();
 		initComponents();
+		editorPane.add(editor);
+		updateGUI();
+	}
+	
+	public MainFrame(DaTextList chars) {
+		this.characters = chars;
+		initComponents();
+		editorPane.add(editor);
+		updateGUI();
+	}
+	
+	
+	public final void updateGUI(){
+		javax.swing.SwingUtilities.invokeLater(new Runnable(){public void run(){doUpdate();}});
 	}
 
+	/** must be invoked on the swing event thread */
+	private void doUpdate(){
+		charListModel.clear();
+		for(int i = 0; i < characters.size(); i++){
+			DaTextObject character = characters.getAsObject(i);
+			charListModel.addElement((i+1)+": "+character.getText("name"));
+		}
+	}
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,40 +58,51 @@ public class MainFrame extends javax.swing.JFrame {
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        characterList = new javax.swing.JList();
+        newButton = new javax.swing.JButton();
+        deleteButton = new javax.swing.JButton();
+        editorPane = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jSplitPane1.setDividerLocation(128);
-
-        jList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
-
-        jButton1.setText("New");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                windowClosingEvent(evt);
             }
         });
 
-        jButton2.setText("Delete");
+        jSplitPane1.setDividerLocation(128);
+
+        characterList.setModel(charListModel);
+        characterList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                characterListValueChanged(evt);
+            }
+        });
+        jScrollPane1.setViewportView(characterList);
+
+        newButton.setText("New");
+        newButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newButtonActionPerformed(evt);
+            }
+        });
+
+        deleteButton.setText("Delete");
+        deleteButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jButton1)
+                .addComponent(newButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
-                .addComponent(jButton2))
+                .addComponent(deleteButton))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -70,30 +110,30 @@ public class MainFrame extends javax.swing.JFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 416, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)))
+                    .addComponent(newButton)
+                    .addComponent(deleteButton)))
         );
 
         jSplitPane1.setLeftComponent(jPanel1);
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout editorPaneLayout = new javax.swing.GroupLayout(editorPane);
+        editorPane.setLayout(editorPaneLayout);
+        editorPaneLayout.setHorizontalGroup(
+            editorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 446, Short.MAX_VALUE)
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        editorPaneLayout.setVerticalGroup(
+            editorPaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 455, Short.MAX_VALUE)
         );
 
-        jSplitPane1.setRightComponent(jPanel2);
+        jSplitPane1.setRightComponent(editorPane);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jSplitPane1)
+            .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 580, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -103,9 +143,30 @@ public class MainFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void newButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newButtonActionPerformed
+        String newName = JOptionPane.showInputDialog(this, "Enter name of new character:");
+		DaTextObject newChar = new DefaultObject();
+		newChar.put("name", newName, null);
+		characters.add(newChar);
+		doUpdate();
+    }//GEN-LAST:event_newButtonActionPerformed
+
+    private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
+        int selectedIndex = this.characterList.getSelectedIndex();
+		if(selectedIndex < 0){return;}
+		characters.remove(selectedIndex);
+		doUpdate();
+    }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void characterListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_characterListValueChanged
+        int selectedIndex = this.characterList.getSelectedIndex();
+		editor.load(characters.getAsObject(selectedIndex));
+    }//GEN-LAST:event_characterListValueChanged
+
+    private void windowClosingEvent(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_windowClosingEvent
+        this.setVisible(false);
+		RPGCharacter.getInstance().exitProgram();
+    }//GEN-LAST:event_windowClosingEvent
 
 	/**
 	 * @param args the command line arguments
@@ -142,12 +203,12 @@ public class MainFrame extends javax.swing.JFrame {
 		});
 	}
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JList jList1;
+    private javax.swing.JList characterList;
+    private javax.swing.JButton deleteButton;
+    private javax.swing.JPanel editorPane;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JButton newButton;
     // End of variables declaration//GEN-END:variables
 }

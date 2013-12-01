@@ -48,8 +48,8 @@ public class DefaultVariable extends DaTextVariable{
 	
 	@Override
 	public DaTextObject asObject(){
-		// TODO: parse text as object
-		throw new UnsupportedOperationException("Not implemented yet.");
+		throw new UnsupportedOperationException("Cannot change type of "
+				+this.getClass().getSimpleName() + " to " + DaTextObject.class.getSimpleName()); 
 	}
 
 	@Override

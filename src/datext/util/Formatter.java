@@ -16,7 +16,7 @@ public class Formatter {
 	
 	final static String[] CONTROL_CHARS = {"{","}","[","]","\n"};
 	final static String[] TEXT_CONTROL_CHARS = {"{","}","[","]","\n","'","\""};
-	final static String[] LIST_CONTROL_CHARS = {"[","]","\n",";"};
+	final static String[] LIST_CONTROL_CHARS = {"[","]",";","'","\""};
 	final static String[] QUOTED_TEXT_CONTROL_CHARS = {"\""};
 	
 	public static String unescape(String input){
