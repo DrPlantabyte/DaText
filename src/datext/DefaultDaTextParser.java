@@ -135,6 +135,7 @@ public class DefaultDaTextParser extends DaTextParser{
 					input.readNextChar();
 					input.readNextChar(); 
 				}
+				// TODO: figure out which lines of code in the FSM are never executed and cut them out to improve code readability
 				switch(state){
 					// Finite state machine (FSM)
 					case WHITESPACE:
